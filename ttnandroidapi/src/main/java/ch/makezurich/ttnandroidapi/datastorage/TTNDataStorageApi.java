@@ -80,7 +80,11 @@ public class TTNDataStorageApi {
                 Gson gson = new Gson();
                 Frame[] frames = gson.fromJson(jsonStr, Frame[].class);
                 if (frames != null) {
-                    return new ArrayList<Frame>(Arrays.asList(frames));
+                    final ArrayList<Frame> frames1ist= new ArrayList<>(Arrays.asList(frames));
+                    for (Frame f: frames1ist) {
+                        f.parse();
+                    }
+                    return frames1ist;
                 }
             }
 
