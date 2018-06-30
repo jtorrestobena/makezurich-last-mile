@@ -1,10 +1,7 @@
 package ch.makezurich.conqueringlastmile;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     private List<Frame> frames = new ArrayList<>();
 
     private View mainView;
+    private ImageView mainLogo;
     private boolean isConfigValid;
 
     @Override
@@ -68,8 +69,19 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "Send me an e-mail", Snackbar.LENGTH_LONG)
+                        .setAction("MAIL", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Intent.ACTION_SEND);
+                                intent.setType("message/rfc822");
+                                intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "josepantoni.torres@gmail.com" });
+                                intent.putExtra(Intent.EXTRA_SUBJECT, "The Things Network App");
+                                intent.putExtra(Intent.EXTRA_TEXT, "I would like to know more about the app sample or the Android TTN SDK.");
+
+                                startActivity(Intent.createChooser(intent, "Send Email"));
+                            }
+                        }).show();
             }
         });
 
@@ -81,6 +93,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mainLogo = findViewById(R.id.main_logo);
+        mainView = findViewById(R.id.fragment_container);
 
         doMainAnimation();
 
@@ -102,20 +117,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void doMainAnimation() {
-        mainView = findViewById(R.id.fragment_container);
-        int colorFrom = getResources().getColor(R.color.white);
-        int colorTo = getResources().getColor(R.color.mainView);
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(500); // milliseconds
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                mainView.setBackgroundColor((int) animator.getAnimatedValue());
-            }
-
-        });
-        colorAnimation.start();
+        Animation hyperspaceJump = AnimationUtils.loadAnimation(this, R.anim.hyperspace_jump);
+        mainLogo.startAnimation(hyperspaceJump);
     }
 
     @Override
@@ -198,8 +201,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        findViewById(R.id.main_logo).setVisibility(View.GONE);
-        mainView.setBackgroundColor(Color.WHITE);
+        mainLogo.setVisibility(View.GONE);
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();

@@ -3,10 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="5dp"
+    android:layout_margin="10dp"
     android:elevation="2dp"
     android:outlineProvider="bounds"
-    android:background="?attr/selectableItemBackground">
+    android:background="@color/white"
+    android:foreground="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/device_id"
