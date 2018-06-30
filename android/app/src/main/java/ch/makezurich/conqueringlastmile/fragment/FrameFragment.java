@@ -3,6 +3,7 @@ package ch.makezurich.conqueringlastmile.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.conqueringlastmile.MainActivity;
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
@@ -21,10 +23,13 @@ import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
  * Activities containing this fragment MUST implement the {@link OnFrameListFragmentInteractionListener}
  * interface.
  */
-public class FrameFragment extends Fragment {
+public class FrameFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private OnFrameListFragmentInteractionListener mListener;
     private List<Frame> frames = new ArrayList<>();
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -46,16 +51,22 @@ public class FrameFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_frame_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_frame_list, container, false);
+        if (v instanceof SwipeRefreshLayout) {
+            swipeRefreshLayout = (SwipeRefreshLayout) v;
+            swipeRefreshLayout.setOnRefreshListener(this);
+        }
+
+        View listView = v.findViewById(R.id.list);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        if (listView instanceof RecyclerView) {
+            Context context = listView.getContext();
+            recyclerView = (RecyclerView) listView;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(new MyframesRecyclerViewAdapter(frames, mListener));
         }
-        return view;
+        return v;
     }
 
     public FrameFragment setFrames(List<Frame> frames) {
@@ -81,6 +92,23 @@ public class FrameFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onRefresh() {
+        new Thread() {
+            @Override
+            public void run() {
+                frames = ((MainActivity) getActivity()).getNewFrames();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recyclerView.setAdapter(new MyframesRecyclerViewAdapter(frames, mListener));
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        }.start();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -94,4 +122,16 @@ public class FrameFragment extends Fragment {
     public interface OnFrameListFragmentInteractionListener {
         void onListFragmentInteraction(Frame item);
     }
+/*
+    public FrameFragment setRefreshListener(SwipeRefreshLayout.OnRefreshListener listener) {
+        swipeRefreshLayout.setOnRefreshListener(listener);
+        return this;
+    }
+
+    public void updateFrames(List<Frame> newFrameList) {
+        swipeRefreshLayout.setRefreshing(false);
+        frames = newFrameList;
+        recyclerView.setAdapter(new MyframesRecyclerViewAdapter(frames, mListener));
+    }
+    */
 }

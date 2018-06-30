@@ -267,6 +267,11 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
+    public List<Frame> getNewFrames() {
+        frames = mTTNDataStore.getAllFrames("7d");
+        return frames;
+    }
+
     @Override
     public void onListFragmentInteraction(Device device) {
         Log.d(TAG, "Clicked on device " + device.getName());
