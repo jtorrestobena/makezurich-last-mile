@@ -59,7 +59,6 @@ public class DevicesFragment extends Fragment {
         return this;
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

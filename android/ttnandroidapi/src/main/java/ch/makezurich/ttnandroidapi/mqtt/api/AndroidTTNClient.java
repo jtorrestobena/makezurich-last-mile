@@ -1,6 +1,7 @@
 package ch.makezurich.ttnandroidapi.mqtt.api;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -32,10 +33,12 @@ public class AndroidTTNClient {
     private MqttAndroidClient mqttAndroidClient;
     private MqttConnectOptions mqttConnectOptions;
 
-    private String subscriptionTopicUpMessages;
+    private final String subscriptionTopicUpMessages;
+    private final String appId;
     private List<AndroidTTNListener> listeners = new ArrayList<>();
 
     public AndroidTTNClient(Context context, String appId, String appAccessKey, String handler, String filter, final AndroidTTNListener listener) {
+        this.appId = appId;
         final String serverUri = PROTOCOL_TCP + handler + BROKER_HOST + ":" + PORT;
         subscriptionTopicUpMessages = filter + "/devices/"+ filter +"/up";
         Log.d(TAG, "will connect to  " + serverUri + " subscribe " + subscriptionTopicUpMessages);
@@ -164,21 +167,39 @@ public class AndroidTTNClient {
         mqttAndroidClient.close();
     }
 
-    /*
-    public void publishMessage(){
+    public void sendPayloadRaw(String device, byte[] payload, final AndroidTTNMessageListener listener) {
+        final String messageJSON =
+                "{\"payload_raw\": \""+ Base64.encodeToString(payload, Base64.NO_WRAP) +"\"}";
 
+        final String deviceTopic = appId + "/devices/"+device+"/down";
+        publishMessage(messageJSON, deviceTopic, listener);
+    }
+
+    private void publishMessage(String publishMessage, String publishTopic, final AndroidTTNMessageListener listener){
+        Log.d(TAG, "Publish message: " + publishMessage + " topic: " + publishTopic);
         try {
             MqttMessage message = new MqttMessage();
             message.setPayload(publishMessage.getBytes());
-            mqttAndroidClient.publish(publishTopic, message);
-            showToast("Message Published");
+            mqttAndroidClient.publish(publishTopic, message, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.d(TAG, "Message Published");
+                    listener.onSuccess();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.e(TAG, "Error sending message");
+                    listener.onError(exception);
+                }
+            });
             if(!mqttAndroidClient.isConnected()){
-                showToast(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
+                Log.d(TAG, mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
             }
         } catch (MqttException e) {
-            System.err.println("Error Publishing: " + e.getMessage());
+            Log.d(TAG, "Error Publishing: " + e.getMessage());
             e.printStackTrace();
+            listener.onError(e);
         }
     }
-*/
 }

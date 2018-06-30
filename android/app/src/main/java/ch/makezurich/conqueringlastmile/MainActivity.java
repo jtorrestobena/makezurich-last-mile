@@ -29,11 +29,14 @@ import java.util.List;
 
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
+import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
+import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 import ch.makezurich.ttnandroidapi.datastorage.api.TTNDataStorageApi;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNClient;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
+import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNMessageListener;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -54,9 +57,11 @@ public class MainActivity extends AppCompatActivity
     private List<Device> devices = new ArrayList<>();
     private List<Frame> frames = new ArrayList<>();
 
-    private View mainView;
+    private FloatingActionButton fab;
     private ImageView mainLogo;
     private boolean isConfigValid;
+
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,34 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        setActionButtonSendMail();
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mainLogo = findViewById(R.id.main_logo);
+
+        doMainAnimation();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        isConfigValid = loadConfiguration(preferences);
+        Log.d(TAG, "Config valid " + isConfigValid);
+        if (isConfigValid) {
+            startClients();
+        } else {
+            Log.d(TAG, "Client is not configured");
+        }
+    }
+
+    private void setActionButtonSendMail() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,30 +116,43 @@ public class MainActivity extends AppCompatActivity
                         }).show();
             }
         });
+    }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+    private void setActionButtonSendPayload() {
+        fab.setVisibility(View.VISIBLE);
+        fab.setImageResource(R.drawable.ic_baseline_send_24px);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentFragment instanceof SendPayloadFragment) {
+                    final SendPayloadFragment sendPayloadFragment = (SendPayloadFragment) (SendPayloadFragment) currentFragment;
+                    final String payloadHex = sendPayloadFragment.getPayloadHex();
+                    final String device = sendPayloadFragment.getSelectedDevice();
+                    Log.d(TAG, "Send hex payload: " + payloadHex + " to device " + device);
+                    if (device == null || device.isEmpty()) {
+                        Toast.makeText(MainActivity.this, R.string.no_device_selected, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (payloadHex != null && !payloadHex.isEmpty()) {
+                        mAndroidTTNClient.sendPayloadRaw(device, StringUtil.hexStringToByteArray(payloadHex), new AndroidTTNMessageListener() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(MainActivity.this, R.string.payload_send_success, Toast.LENGTH_LONG).show();
+                            }
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        mainLogo = findViewById(R.id.main_logo);
-        mainView = findViewById(R.id.fragment_container);
-
-        doMainAnimation();
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.registerOnSharedPreferenceChangeListener(this);
-        isConfigValid = loadConfiguration(preferences);
-        Log.d(TAG, "Config valid " + isConfigValid);
-        if (isConfigValid) {
-            startClients();
-        } else {
-            Log.d(TAG, "Client is not configured");
-        }
+                            @Override
+                            public void onError(Throwable _error) {
+                                Toast.makeText(MainActivity.this, R.string.payload_send_error, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(MainActivity.this, R.string.payload_empty_msg, Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.e(TAG, "Fragment is not send payload");
+                }
+            }
+        });
     }
 
     @Override
@@ -203,12 +248,16 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         mainLogo.setVisibility(View.GONE);
 
+        setTitle(item.getTitle());
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_devices) {
+            fab.setVisibility(View.GONE);
             replaceFragment(DevicesFragment.newInstance().setDevices(devices));
         } else if (id == R.id.nav_frames) {
+            fab.setVisibility(View.GONE);
             replaceFragment(FrameFragment.newInstance().setFrames(frames));
         } else if (id == R.id.nav_mqtt) {
 
@@ -217,7 +266,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_arduino) {
 
         } else if (id == R.id.nav_send) {
-
+            setActionButtonSendPayload();
+            replaceFragment(SendPayloadFragment.newInstance().setDevices(devices));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -261,6 +311,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void replaceFragment(Fragment fragment) {
+        currentFragment = fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);

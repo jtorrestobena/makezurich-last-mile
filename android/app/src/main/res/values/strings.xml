@@ -79,4 +79,10 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="payload_hex">Payload HEX:</string>
+    <string name="payload_empty_msg">Please enter payload value</string>
+    <string name="device_select">Select device:</string>
+    <string name="no_device_selected">Please select device</string>
+    <string name="payload_send_success">Payload successfully sent</string>
+    <string name="payload_send_error">Error sending payload</string>
 </resources>
