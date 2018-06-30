@@ -137,14 +137,17 @@ public class MainActivity extends AppCompatActivity
                         mAndroidTTNClient.sendPayloadRaw(device, StringUtil.hexStringToByteArray(payloadHex), new AndroidTTNMessageListener() {
                             @Override
                             public void onSuccess() {
+                                sendPayloadFragment.setSendProgress(false);
                                 Toast.makeText(MainActivity.this, R.string.payload_send_success, Toast.LENGTH_LONG).show();
                             }
 
                             @Override
                             public void onError(Throwable _error) {
+                                sendPayloadFragment.setSendProgress(false);
                                 Toast.makeText(MainActivity.this, R.string.payload_send_error, Toast.LENGTH_LONG).show();
                             }
                         });
+                        sendPayloadFragment.setSendProgress(true);
                     } else {
                         Toast.makeText(MainActivity.this, R.string.payload_empty_msg, Toast.LENGTH_LONG).show();
                     }

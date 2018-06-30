@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class SendPayloadFragment extends Fragment implements AdapterView.OnItemS
     private EditText payloadText;
     private String selectedDevice = "";
     private List<String> deviceNames = new ArrayList<>();
+    private ProgressBar sendProgress;
 
     public SendPayloadFragment() {
         // Required empty public constructor
@@ -49,6 +51,7 @@ public class SendPayloadFragment extends Fragment implements AdapterView.OnItemS
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_send_payload, container, false);
         payloadText = view.findViewById(R.id.payload_hex_input);
+        sendProgress = view.findViewById(R.id.sendProgress);
 
         for (Device d : this.devices) {
             deviceNames.add(d.getName());
@@ -95,5 +98,9 @@ public class SendPayloadFragment extends Fragment implements AdapterView.OnItemS
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         selectedDevice = "";
+    }
+
+    public void setSendProgress(boolean progress) {
+        sendProgress.setVisibility(progress ? View.VISIBLE : View.INVISIBLE);
     }
 }
