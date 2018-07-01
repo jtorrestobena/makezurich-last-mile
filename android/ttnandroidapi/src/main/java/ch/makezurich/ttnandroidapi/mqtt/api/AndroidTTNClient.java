@@ -18,6 +18,9 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.ttnandroidapi.R;
+import ch.makezurich.ttnandroidapi.mqtt.api.tls.SocketFactory;
+
 public class AndroidTTNClient {
     private static final String TAG = "AndroidTTNClient";
 
@@ -28,7 +31,9 @@ public class AndroidTTNClient {
     //https://www.thethingsnetwork.org/docs/applications/mqtt/api.html
     private static final String BROKER_HOST = ".thethings.network";
     private static final String PROTOCOL_TCP = "tcp://";
+    private static final String PROTOCOL_TLS = "ssl://";
     private static final int PORT = 1883;
+    private static final int PORT_TLS = 8883;
 
     private MqttAndroidClient mqttAndroidClient;
     private MqttConnectOptions mqttConnectOptions;
@@ -37,9 +42,14 @@ public class AndroidTTNClient {
     private final String appId;
     private List<AndroidTTNListener> listeners = new ArrayList<>();
 
-    public AndroidTTNClient(Context context, String appId, String appAccessKey, String handler, String filter, final AndroidTTNListener listener) {
+    public AndroidTTNClient(Context context, String appId, String appAccessKey, String handler, String filter, boolean enableTLS, final AndroidTTNListener listener) {
         this.appId = appId;
-        final String serverUri = PROTOCOL_TCP + handler + BROKER_HOST + ":" + PORT;
+        final String serverUri;
+        if (enableTLS) {
+            serverUri = PROTOCOL_TLS + handler + BROKER_HOST + ":" + PORT_TLS;
+        } else {
+            serverUri = PROTOCOL_TCP + handler + BROKER_HOST + ":" + PORT;
+        }
         subscriptionTopicUpMessages = filter + "/devices/"+ filter +"/up";
         Log.d(TAG, "will connect to  " + serverUri + " subscribe " + subscriptionTopicUpMessages);
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, TTN_CLIENT_ID);
@@ -48,6 +58,14 @@ public class AndroidTTNClient {
         //mqttConnectOptions.setCleanSession(false);
         mqttConnectOptions.setUserName(appId);
         mqttConnectOptions.setPassword(appAccessKey.toCharArray());
+        if (enableTLS) try {
+            SocketFactory.SocketFactoryOptions socketFactoryOptions = new SocketFactory.SocketFactoryOptions();
+            socketFactoryOptions.withCaInputStream(context.getResources().openRawResource(R.raw.mqttca));
+            mqttConnectOptions.setSocketFactory(new SocketFactory(socketFactoryOptions));
+        } catch (Exception e) {
+            Log.d(TAG, "Could not enable TLS: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         listeners.add(listener);
 

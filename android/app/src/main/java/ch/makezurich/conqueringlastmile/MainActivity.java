@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startClients() {
-        mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, this);
+        mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, true, this);
         mAndroidTTNClient.start();
         mTTNDataStore = new TTNDataStorageApi(appId, appAccessKey);
     }
