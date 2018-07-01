@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity
     private String appId;
     private String appAccessKey;
     private String handler;
+    private boolean tlsEnabled;
+    private boolean dataAPIEnabled;
 
     private AndroidTTNClient mAndroidTTNClient;
     private TTNDataStorageApi mTTNDataStore;
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startClients() {
-        mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, true, this);
+        mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
         mAndroidTTNClient.start();
         mTTNDataStore = new TTNDataStorageApi(appId, appAccessKey);
     }
@@ -309,6 +311,10 @@ public class MainActivity extends AppCompatActivity
         if (appAccessKey == null) return false;
 
         handler = preferences.getString("ttn_handler", "eu");
+        tlsEnabled = preferences.getBoolean("enable_tls", true);
+
+        dataAPIEnabled = preferences.getBoolean("enable_data_api", false);
+        Log.d(TAG, handler + " connection with TLS: " + tlsEnabled + " data api " + dataAPIEnabled);
 
         return true;
     }

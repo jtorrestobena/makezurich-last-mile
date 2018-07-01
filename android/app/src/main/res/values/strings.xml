@@ -12,6 +12,12 @@
     <!-- Example General settings -->
     <string name="pref_header_general">TTN Account</string>
 
+    <string name="pref_title_tls">Enable TLS</string>
+    <string name="pref_description_tls">Enable secure connection</string>
+
+    <string name="pref_title_data_api">Enable Data API</string>
+    <string name="pref_description_data_api">Enable frame storage. Data API must be enabled on the TTN console (under integrations)</string>
+
     <string name="pref_title_ttn_app_id">Application ID</string>
     <string name="pref_default_ttn_app_id">Enter app id</string>
 
@@ -70,9 +76,8 @@
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
 
+    <string name="pref_header_notifications">Notifications</string>
     <string name="pref_title_new_message_notifications">New message notifications</string>
 
     <string name="pref_title_ringtone">Ringtone</string>

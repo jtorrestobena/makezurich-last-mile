@@ -99,7 +99,7 @@ public class SocketFactory extends javax.net.ssl.SSLSocketFactory{
             caKeyStore.load(null, null);
 
             CertificateFactory caCF = CertificateFactory.getInstance("X.509");
-            //X509Certificate ca = (X509Certificate) caCF.generateCertificate(options.getCaCrtInputStream());
+
             int cert_num = 0;
             final Collection<? extends Certificate> certificates = caCF.generateCertificates(options.getCaCrtInputStream());
             for (Certificate ca : certificates) {
@@ -108,8 +108,7 @@ public class SocketFactory extends javax.net.ssl.SSLSocketFactory{
                 cert_num++;
                 Log.v(TAG, alias + " has cert " + ca);
             }
-            /*
-            }*/
+
             tmf.init(caKeyStore);
         } else {
             Log.v(TAG, "CA sideload: false, using system keystore");

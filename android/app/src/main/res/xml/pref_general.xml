@@ -1,5 +1,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="enable_tls"
+        android:summary="@string/pref_description_tls"
+        android:title="@string/pref_title_tls" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="enable_data_api"
+        android:summary="@string/pref_description_data_api"
+        android:title="@string/pref_title_data_api" />
+
     <EditTextPreference
         android:capitalize="none"
         android:defaultValue="@string/pref_default_ttn_app_id"
