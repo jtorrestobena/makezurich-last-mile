@@ -26,8 +26,9 @@ import javax.security.cert.CertificateException;
 /**
  * Original SocketFactory file taken from https://github.com/owntracks/android
  *
- * Small modification to handle a certificate collection to properly set the keystore
- * with all certificates at: https://console.thethingsnetwork.org/mqtt-ca.pem
+ * Small modification done by Jose Antonio Torres Tobena to handle a certificate
+ * collection, to properly set the keystore with all certificates at:
+ * https://console.thethingsnetwork.org/mqtt-ca.pem
  */
 
 public class SocketFactory extends javax.net.ssl.SSLSocketFactory{

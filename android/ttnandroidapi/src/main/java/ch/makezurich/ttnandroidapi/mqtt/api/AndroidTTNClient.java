@@ -4,6 +4,12 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -14,11 +20,16 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import ch.makezurich.ttnandroidapi.R;
+import ch.makezurich.ttnandroidapi.mqtt.api.data.DateTimeConverter;
+import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 import ch.makezurich.ttnandroidapi.mqtt.api.tls.SocketFactory;
 
 public class AndroidTTNClient {
@@ -34,6 +45,7 @@ public class AndroidTTNClient {
     private static final String PROTOCOL_TLS = "ssl://";
     private static final int PORT = 1883;
     private static final int PORT_TLS = 8883;
+    private final Gson mGson;
 
     private MqttAndroidClient mqttAndroidClient;
     private MqttConnectOptions mqttConnectOptions;
@@ -44,6 +56,12 @@ public class AndroidTTNClient {
 
     public AndroidTTNClient(Context context, String appId, String appAccessKey, String handler, String filter, boolean enableTLS, final AndroidTTNListener listener) {
         this.appId = appId;
+        // init joda date time
+        JodaTimeAndroid.init(context);
+
+        mGson = new GsonBuilder()
+                .registerTypeAdapter(DateTime.class, new DateTimeConverter())
+                .create();
         final String serverUri;
         if (enableTLS) {
             serverUri = PROTOCOL_TLS + handler + BROKER_HOST + ":" + PORT_TLS;
@@ -65,6 +83,7 @@ public class AndroidTTNClient {
         } catch (Exception e) {
             Log.d(TAG, "Could not enable TLS: " + e.getMessage());
             e.printStackTrace();
+            listener.onTLSError(e);
         }
 
         listeners.add(listener);
@@ -92,9 +111,18 @@ public class AndroidTTNClient {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.d(TAG, "Incoming message: " + new String(message.getPayload()));
-                for (AndroidTTNListener l : listeners) {
-                    l.onMessage(new String(message.getPayload()));
+                String jsonStr = new String(message.getPayload());
+                Log.d(TAG, "Incoming message: " + jsonStr);
+                try {
+
+                    Packet packet = mGson.fromJson(jsonStr, Packet.class);
+                    for (AndroidTTNListener l : listeners) {
+                        l.onPacket(packet);
+                    }
+                } catch (JsonSyntaxException e) {
+                    for (AndroidTTNListener l : listeners) {
+                        l.onError(e);
+                    }
                 }
             }
 
@@ -129,9 +157,19 @@ public class AndroidTTNClient {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     // message Arrived!
-                    Log.d(TAG, "Message: " + topic + " : " + new String(message.getPayload()));
-                    for (AndroidTTNListener l : listeners) {
-                        l.onMessage(new String(message.getPayload()));
+                    String jsonStr = new String(message.getPayload());
+                    Log.d(TAG, "Message arrived: " + jsonStr);
+                    try {
+
+                        Packet packet = mGson.fromJson(jsonStr, Packet.class);
+                        for (AndroidTTNListener l : listeners) {
+                            l.onPacket(packet);
+                        }
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                        for (AndroidTTNListener l : listeners) {
+                            l.onError(e);
+                        }
                     }
                 }
             });
@@ -168,8 +206,10 @@ public class AndroidTTNClient {
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.d(TAG, "Failed to connect");
                     exception.printStackTrace();
-                    for (AndroidTTNListener l : listeners) {
-                        l.onError(exception);
+                    if (exception.getCause() instanceof SSLHandshakeException) {
+                        for (AndroidTTNListener l : listeners) l.onTLSError(exception);
+                    } else {
+                        for (AndroidTTNListener l : listeners) l.onError(exception);
                     }
                 }
             });

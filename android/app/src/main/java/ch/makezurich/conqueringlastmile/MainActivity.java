@@ -1,5 +1,26 @@
 package ch.makezurich.conqueringlastmile;
+/*
+ * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
+ * slightly modified by Jose Antonio Torres Tobena
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Created by fabiotiriticco on 5 June 2016.
+ *
+ */
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,6 +58,7 @@ import ch.makezurich.ttnandroidapi.datastorage.api.TTNDataStorageApi;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNClient;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNMessageListener;
+import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -181,6 +203,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startClients() {
+        if (mAndroidTTNClient != null)
+            mAndroidTTNClient.stop();
+
         mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
         mAndroidTTNClient.start();
         mTTNDataStore = new TTNDataStorageApi(appId, appAccessKey);
@@ -291,13 +316,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals("ttn_app_id") || key.equals("ttn_app_access_key") || key.equals("ttn_handler")) {
-            isConfigValid = loadConfiguration(sharedPreferences);
-            Log.d(TAG, "TTN account config changed, is valid " + isConfigValid);
-            if (isConfigValid) {
-                startClients();
-                reloadDevices();
-            }
+        isConfigValid = loadConfiguration(sharedPreferences);
+        if (isConfigValid) {
+            startClients();
+            reloadDevices();
         }
     }
 
@@ -350,12 +372,31 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onTLSError(Throwable _error) {
+        // Show an error indicating that TLS failed
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.tls_error_title)
+                .setIcon(R.drawable.ic_baseline_lock_open_24px)
+                .setMessage(R.string.tls_error_message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Disable tls
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+                        editor.putBoolean("enable_tls", false).apply();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null);
+        builder.create().show();
+    }
+
+    @Override
     public void onConnected(boolean _reconnect) {
         showToast(_reconnect ? "Reconnected" : "Connected");
     }
 
     @Override
-    public void onMessage(String _message) {
-        showToast(_message);
+    public void onPacket(Packet _message) {
+
+        showToast(_message.toString());
     }
 }
