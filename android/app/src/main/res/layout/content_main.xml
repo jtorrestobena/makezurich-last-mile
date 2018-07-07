@@ -49,9 +49,9 @@
                     android:background="@drawable/intro_textview"
                     android:layout_marginBottom="5dp">
                     <TextView
-                        android:id="@+id/connecting_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/pompiere_regular"
                         android:text="@string/connecting_ttn"
                         android:textSize="24sp"
                         android:layout_marginRight="10dp"/>
@@ -72,9 +72,9 @@
                     android:padding="5dp"
                     android:background="@drawable/intro_textview">
                     <TextView
-                        android:id="@+id/fetching_data_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/pompiere_regular"
                         android:text="@string/fetch_data"
                         android:textSize="24sp"
                         android:layout_marginRight="10dp"/>

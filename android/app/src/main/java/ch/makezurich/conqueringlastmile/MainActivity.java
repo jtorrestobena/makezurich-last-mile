@@ -48,7 +48,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -57,7 +56,6 @@ import java.util.List;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
-import ch.makezurich.conqueringlastmile.util.FontCache;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
@@ -66,8 +64,6 @@ import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNClient;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNMessageListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
-
-import static ch.makezurich.conqueringlastmile.util.FontCache.FONT_POMPIERE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -93,9 +89,7 @@ public class MainActivity extends AppCompatActivity
     private FloatingActionButton fab;
     private ConstraintLayout welcomeLayout;
     private boolean isConfigValid;
-    private TextView connectingTextView;
     private ImageView connectingImageView;
-    private TextView fetchDataTextView;
     private ImageView fetchDataImageView;
 
     private Fragment currentFragment;
@@ -202,14 +196,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupViews() {
-        connectingTextView = findViewById(R.id.connecting_tv);
-        connectingTextView.setTypeface(FontCache.get(FONT_POMPIERE, this));
-
         connectingImageView = findViewById(R.id.connecting_iv);
         connectingImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
-
-        fetchDataTextView = findViewById(R.id.fetching_data_tv);
-        fetchDataTextView.setTypeface(FontCache.get(FONT_POMPIERE, this));
 
         fetchDataImageView = findViewById(R.id.fetching_data_iv);
         fetchDataImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
