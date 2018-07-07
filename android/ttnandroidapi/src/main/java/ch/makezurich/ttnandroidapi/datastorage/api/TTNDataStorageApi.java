@@ -21,12 +21,33 @@ public class TTNDataStorageApi {
     private String authKey;
     private String apiUrl;
 
+    public static class TTNDataException extends Exception {
+        private int code = 0;
+
+        public TTNDataException(String message) {
+            super(message);
+        }
+
+        public TTNDataException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public TTNDataException(String message, int code) {
+            super(message);
+            this.code = code;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+    }
+
     public TTNDataStorageApi(String appId, String authKey) {
         this.apiUrl = "https://"+ appId +".data.thethingsnetwork.org/api/v2/";
         this.authKey = authKey;
     }
 
-    public List<Device> getDevices() {
+    public List<Device> getDevices() throws TTNDataException {
         List<Device> devices = new ArrayList<>();
         try {
             String jsonStr= executeQuery("devices");
@@ -41,11 +62,12 @@ public class TTNDataStorageApi {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            throw new TTNDataException("IOException", e);
         }
         return devices;
     }
 
-    private String executeQuery(String method) throws IOException {
+    private String executeQuery(String method) throws IOException, TTNDataException {
         final String url = apiUrl + method;
         Log.d(TAG, "Fetching URL: " + url);
         HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
@@ -65,7 +87,7 @@ public class TTNDataStorageApi {
             return reply;
         }
 
-        return null;
+        throw new TTNDataException("HTTP Error", code);
     }
 
     private static String getString(InputStream inputStream) {
@@ -73,7 +95,7 @@ public class TTNDataStorageApi {
         return  s.hasNext() ? s.next() : "";
     }
 
-    public List<Frame> getAllFrames(String since) {
+    public List<Frame> getAllFrames(String since) throws TTNDataException {
         try {
             String jsonStr= executeQuery("query?last=" + since);
             if (jsonStr != null) {
@@ -90,6 +112,7 @@ public class TTNDataStorageApi {
 
         } catch (IOException e) {
             e.printStackTrace();
+            throw new TTNDataException("IOException", e);
         }
 
         return new ArrayList<Frame>();

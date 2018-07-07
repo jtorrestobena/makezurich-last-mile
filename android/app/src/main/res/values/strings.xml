@@ -32,7 +32,7 @@
     </string-array>
     <string name="ttn_handler_default_value">eu</string>
     <string-array name="pref_example_list_values">
-        <item>eu</item>
+        <item>@string/ttn_handler_default_value</item>
         <item>us-west</item>
         <item>asia-se</item>
         <item>asia-se</item>
@@ -93,4 +93,11 @@
 
     <string name="tls_error_title">Secure connection error</string>
     <string name="tls_error_message">An error occurred when trying to secure your connection.\nDo you want to disable secure connection.</string>
+    <string name="welcome_message">Tap to get started</string>
+    <string name="welcome_ttn_account_question">Do you have a TTN account?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="connecting_ttn">Connecting to the TTN</string>
+    <string name="fetch_data">Fetching stored data</string>
 </resources>

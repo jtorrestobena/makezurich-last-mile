@@ -20,11 +20,17 @@ package ch.makezurich.conqueringlastmile;
  */
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.support.annotation.IdRes;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -40,9 +46,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -51,6 +57,7 @@ import java.util.List;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
+import ch.makezurich.conqueringlastmile.util.FontCache;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
@@ -59,6 +66,8 @@ import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNClient;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNMessageListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
+
+import static ch.makezurich.conqueringlastmile.util.FontCache.FONT_POMPIERE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -82,8 +91,12 @@ public class MainActivity extends AppCompatActivity
     private List<Frame> frames = new ArrayList<>();
 
     private FloatingActionButton fab;
-    private ImageView mainLogo;
+    private ConstraintLayout welcomeLayout;
     private boolean isConfigValid;
+    private TextView connectingTextView;
+    private ImageView connectingImageView;
+    private TextView fetchDataTextView;
+    private ImageView fetchDataImageView;
 
     private Fragment currentFragment;
 
@@ -106,13 +119,13 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mainLogo = findViewById(R.id.main_logo);
-
-        doMainAnimation();
+        welcomeLayout = findViewById(R.id.welcome_layout);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
         isConfigValid = loadConfiguration(preferences);
+
+        setupViews();
         Log.d(TAG, "Config valid " + isConfigValid);
         if (isConfigValid) {
             startClients();
@@ -188,9 +201,18 @@ public class MainActivity extends AppCompatActivity
         mAndroidTTNClient.stop();
     }
 
-    private void doMainAnimation() {
-        Animation hyperspaceJump = AnimationUtils.loadAnimation(this, R.anim.hyperspace_jump);
-        mainLogo.startAnimation(hyperspaceJump);
+    private void setupViews() {
+        connectingTextView = findViewById(R.id.connecting_tv);
+        connectingTextView.setTypeface(FontCache.get(FONT_POMPIERE, this));
+
+        connectingImageView = findViewById(R.id.connecting_iv);
+        connectingImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+
+        fetchDataTextView = findViewById(R.id.fetching_data_tv);
+        fetchDataTextView.setTypeface(FontCache.get(FONT_POMPIERE, this));
+
+        fetchDataImageView = findViewById(R.id.fetching_data_iv);
+        fetchDataImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
     }
 
     @Override
@@ -215,29 +237,29 @@ public class MainActivity extends AppCompatActivity
         new Thread() {
             @Override
             public void run() {
-                devices = mTTNDataStore.getDevices();
-                // Frames from last 7 days
-                frames = mTTNDataStore.getAllFrames("7d");
+                try {
+                    devices = mTTNDataStore.getDevices();
+                    // Frames from last 7 days
+                    frames = mTTNDataStore.getAllFrames("7d");
 
-                final StringBuilder welComeStr = new StringBuilder("You have:\n")
-                        .append(devices.size()).append(" devices\n")
-                        .append(frames.size()).append(" frames\n");
-                Log.d(TAG, welComeStr.toString());
-                /*runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fragmentContainer.setText(welComeStr.toString());
-                    }
-                });*/
+                    final StringBuilder welComeStr = new StringBuilder("You have:\n")
+                            .append(devices.size()).append(" devices\n")
+                            .append(frames.size()).append(" frames\n");
+                    Log.d(TAG, welComeStr.toString());
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchDataImageView.clearAnimation();
+                            fetchDataImageView.setImageResource(R.drawable.ic_baseline_done_24px);
+                        }
+                    });
+                } catch (TTNDataStorageApi.TTNDataException ttnExc) {
+                    showErrorIcon(fetchDataImageView, R.id.fetch_data_layout);
+                }
+
             }
         }.start();
-    }
-
-
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -276,7 +298,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        mainLogo.setVisibility(View.GONE);
+        welcomeLayout.setVisibility(View.GONE);
 
         setTitle(item.getTitle());
 
@@ -306,12 +328,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showToast(final String toastMessage) {
-        runOnUiThread(new Runnable() {
+        /*runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -352,7 +374,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public List<Frame> getNewFrames() {
-        frames = mTTNDataStore.getAllFrames("7d");
+        try {
+            frames = mTTNDataStore.getAllFrames("7d");
+        } catch (TTNDataStorageApi.TTNDataException e) {
+            e.printStackTrace();
+        }
         return frames;
     }
 
@@ -369,6 +395,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onError(Throwable _error) {
         showToast("Error " + _error);
+        showErrorIcon(connectingImageView, R.id.connect_layout);
     }
 
     @Override
@@ -392,11 +419,31 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnected(boolean _reconnect) {
         showToast(_reconnect ? "Reconnected" : "Connected");
+        connectingImageView.clearAnimation();
+        connectingImageView.setImageResource(R.drawable.ic_baseline_done_24px);
     }
 
     @Override
     public void onPacket(Packet _message) {
 
         showToast(_message.toString());
+    }
+
+    private void showErrorIcon(final ImageView iv, @IdRes final int layoutId) {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds, the duration of the animation
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        }else {
+            v.vibrate(500);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                iv.clearAnimation();
+                iv.setImageResource(R.drawable.ic_baseline_close_24px);
+                findViewById(layoutId).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.error));
+            }
+        });
     }
 }
