@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.util.Util;
@@ -93,6 +94,16 @@ public class DashboardFragment extends BaseFragment {
     private void setupView(View rootView) {
         for (View navEntry : Util.getViewsByTag((ViewGroup) rootView, "nav_entry")) {
             navEntry.setOnClickListener(mViewClickListener);
+        }
+
+        if (numDevices > 0) {
+            final TextView devicesTextView = rootView.findViewById(R.id.tv_device_data_sum);
+            devicesTextView.setText(String.format(getString(R.string.devices_dash_sum_plural), numDevices));
+        }
+
+        if (numFrames > 0) {
+            final TextView framesTextView = rootView.findViewById(R.id.tv_device_frames_sum);
+            framesTextView.setText(String.format(getString(R.string.frames_dash_sum_plural), numFrames));
         }
     }
 

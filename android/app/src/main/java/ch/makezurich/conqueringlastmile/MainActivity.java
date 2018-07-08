@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity
     private ImageView fetchDataImageView;
 
     private Fragment currentFragment;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +113,8 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        fragmentManager = getSupportFragmentManager();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -141,9 +144,9 @@ public class MainActivity extends AppCompatActivity
                             public void onClick(View view) {
                                 Intent intent = new Intent(Intent.ACTION_SEND);
                                 intent.setType("message/rfc822");
-                                intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "josepantoni.torres@gmail.com" });
-                                intent.putExtra(Intent.EXTRA_SUBJECT, "The Things Network App");
-                                intent.putExtra(Intent.EXTRA_TEXT, "I would like to know more about the app sample or the Android TTN SDK.");
+                                intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.email_address) });
+                                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject));
+                                intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_text));
 
                                 startActivity(Intent.createChooser(intent, "Send Email"));
                             }
@@ -260,6 +263,11 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                Log.d(TAG, "End of back stack, showing main view");
+                welcomeLayout.setVisibility(View.VISIBLE);
+                setTitle(R.string.app_name);
+            }
         }
     }
 
@@ -358,7 +366,6 @@ public class MainActivity extends AppCompatActivity
 
     public void replaceFragment(Fragment fragment) {
         currentFragment = fragment;
-        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(fragment.toString());

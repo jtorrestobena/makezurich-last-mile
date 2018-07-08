@@ -62,6 +62,7 @@
                             android:background="@color/lightgray"
                             android:layout_margin="2dp"/>
                         <TextView
+                            android:id="@+id/tv_device_data_sum"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/devices_dash_sum"
@@ -111,6 +112,7 @@
                             android:background="@color/lightgray"
                             android:layout_margin="2dp"/>
                         <TextView
+                            android:id="@+id/tv_device_frames_sum"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/frames_dash_sum"

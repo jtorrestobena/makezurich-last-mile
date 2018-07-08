@@ -111,9 +111,14 @@
     <string name="gps_tracker">GPS tracker</string>
 
     <string name="devices_dash_sum">Data from devices</string>
+    <string name="devices_dash_sum_plural">Data from %1$d devices</string>
     <string name="frames_dash_sum">View last frames</string>
+    <string name="frames_dash_sum_plural">View last %1$d frames</string>
     <string name="mqtt_dash_sum">View realtime data</string>
     <string name="send_payload_dash_sum">Send data to devices</string>
     <string name="tools_dash_sum">View status</string>
     <string name="arduino_dash_sum">View sample app</string>
+    <string name="email_address">josepantoni.torres@gmail.com</string>
+    <string name="email_subject">The Things Network App</string>
+    <string name="email_text">I would like to know more about the app sample or the Android TTN SDK.</string>
 </resources>
