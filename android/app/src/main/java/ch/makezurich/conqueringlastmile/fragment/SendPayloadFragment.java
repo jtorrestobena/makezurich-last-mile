@@ -23,7 +23,7 @@ import ch.makezurich.ttnandroidapi.datastorage.api.Device;
  * Use the {@link SendPayloadFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SendPayloadFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class SendPayloadFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
 
     private List<Device> devices;
     private EditText payloadText;

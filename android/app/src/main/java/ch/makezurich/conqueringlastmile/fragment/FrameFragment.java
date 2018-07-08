@@ -2,7 +2,6 @@ package ch.makezurich.conqueringlastmile.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +22,7 @@ import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
  * Activities containing this fragment MUST implement the {@link OnFrameListFragmentInteractionListener}
  * interface.
  */
-public class FrameFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private OnFrameListFragmentInteractionListener mListener;
     private List<Frame> frames = new ArrayList<>();

@@ -291,20 +291,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         welcomeLayout.setVisibility(View.GONE);
 
-        setTitle(item.getTitle());
-
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        final String title = item.getTitle().toString();
 
         if (id == R.id.nav_dashboard) {
             fab.setVisibility(View.GONE);
-            replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()));
+            replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()).withIdTitle(title, id));
         } else if (id == R.id.nav_devices) {
             fab.setVisibility(View.GONE);
-            replaceFragment(DevicesFragment.newInstance().setDevices(devices));
+            replaceFragment(DevicesFragment.newInstance().setDevices(devices).withIdTitle(title, id));
         } else if (id == R.id.nav_frames) {
             fab.setVisibility(View.GONE);
-            replaceFragment(FrameFragment.newInstance().setFrames(frames));
+            replaceFragment(FrameFragment.newInstance().setFrames(frames).withIdTitle(title, id));
         } else if (id == R.id.nav_mqtt) {
 
         } else if (id == R.id.nav_manage) {
@@ -313,7 +312,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
             setActionButtonSendPayload();
-            replaceFragment(SendPayloadFragment.newInstance().setDevices(devices));
+            replaceFragment(SendPayloadFragment.newInstance().setDevices(devices).withIdTitle(title, id));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -443,7 +442,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDashboardSelection(int navItem) {
-        navigationView.setCheckedItem(navItem);
+        setSelectedItem(navItem);
         onNavigationItemSelected(navigationView.getMenu().findItem(navItem));
+    }
+
+    public void setSelectedItem(int navItem) {
+        navigationView.setCheckedItem(navItem);
     }
 }

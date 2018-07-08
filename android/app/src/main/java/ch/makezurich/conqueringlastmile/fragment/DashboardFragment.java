@@ -22,7 +22,7 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
  * Use the {@link DashboardFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends BaseFragment {
     private static final String ARG_NUMDEV = "numdevices";
     private static final String ARG_NUMFRAME = "numframes";
 
@@ -94,16 +94,6 @@ public class DashboardFragment extends Fragment {
         for (View navEntry : Util.getViewsByTag((ViewGroup) rootView, "nav_entry")) {
             navEntry.setOnClickListener(mViewClickListener);
         }
-
-        /*rootView.findViewById(R.id.nav_frames)
-        rootView.findViewById(R.id.nav_devices)
-        rootView.findViewById(R.id.nav_frames).setOnClickListener(mViewClickListener);
-        rootView.findViewById(R.id.nav_mqtt).setOnClickListener(mViewClickListener);
-        rootView.findViewById(R.id.nav_send).setOnClickListener(mViewClickListener);
-        rootView.findViewById(R.id.nav_manage).setOnClickListener(mViewClickListener);
-        rootView.findViewById(R.id.nav_devices).setOnClickListener(mViewClickListener);
-        rootView.findViewById(R.id.nav_devices).setOnClickListener(mViewClickListener);
-        rootView.findViewById(R.id.nav_arduino).setOnClickListener(mViewClickListener);*/
     }
 
     public void onItemPressed(int menuId) {
