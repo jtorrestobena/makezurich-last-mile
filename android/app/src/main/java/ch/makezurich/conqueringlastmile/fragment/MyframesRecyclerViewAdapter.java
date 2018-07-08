@@ -12,6 +12,22 @@ import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment.OnFrameListFragmentInteractionListener;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
+/*
+ * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Frame} and makes a call to the
  * specified {@link OnFrameListFragmentInteractionListener}.
@@ -60,20 +76,20 @@ public class MyframesRecyclerViewAdapter extends RecyclerView.Adapter<MyframesRe
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mDeviceIdView;
-        public final TextView mRawDataView;
-        public final TextView mHexPayloadView;
-        public final TextView mTimeStampView;
+        final View mView;
+        final TextView mDeviceIdView;
+        final TextView mRawDataView;
+        final TextView mHexPayloadView;
+        final TextView mTimeStampView;
         public Frame mItem;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
-            mDeviceIdView = (TextView) view.findViewById(R.id.device_id);
-            mRawDataView = (TextView) view.findViewById(R.id.raw_data);
-            mHexPayloadView = (TextView) view.findViewById(R.id.hex_data);
-            mTimeStampView = (TextView) view.findViewById(R.id.frame_timestamp);
+            mDeviceIdView = view.findViewById(R.id.device_id);
+            mRawDataView = view.findViewById(R.id.raw_data);
+            mHexPayloadView = view.findViewById(R.id.hex_data);
+            mTimeStampView = view.findViewById(R.id.frame_timestamp);
         }
 
         @Override

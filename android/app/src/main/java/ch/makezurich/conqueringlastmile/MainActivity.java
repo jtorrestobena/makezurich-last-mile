@@ -1,7 +1,6 @@
 package ch.makezurich.conqueringlastmile;
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
- * slightly modified by Jose Antonio Torres Tobena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +13,6 @@ package ch.makezurich.conqueringlastmile;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Created by fabiotiriticco on 5 June 2016.
- *
  */
 
 import android.app.AlertDialog;
@@ -30,6 +26,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -102,21 +99,21 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         setActionButtonSendMail();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         fragmentManager = getSupportFragmentManager();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         welcomeLayout = findViewById(R.id.welcome_layout);
@@ -156,13 +153,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setActionButtonSendPayload() {
+        //TODO this fab should go into the fragment
         fab.setVisibility(View.VISIBLE);
         fab.setImageResource(R.drawable.ic_baseline_send_24px);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (currentFragment instanceof SendPayloadFragment) {
-                    final SendPayloadFragment sendPayloadFragment = (SendPayloadFragment) (SendPayloadFragment) currentFragment;
+                    final SendPayloadFragment sendPayloadFragment = (SendPayloadFragment) currentFragment;
                     final String payloadHex = sendPayloadFragment.getPayloadHex();
                     final String device = sendPayloadFragment.getSelectedDevice();
                     Log.d(TAG, "Send hex payload: " + payloadHex + " to device " + device);
@@ -236,10 +234,11 @@ public class MainActivity extends AppCompatActivity
                     // Frames from last 7 days
                     frames = mTTNDataStore.getAllFrames("7d");
 
+                    /*
                     final StringBuilder welComeStr = new StringBuilder("You have:\n")
                             .append(devices.size()).append(" devices\n")
                             .append(frames.size()).append(" frames\n");
-                    Log.d(TAG, welComeStr.toString());
+                    Log.d(TAG, welComeStr.toString());*/
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -258,7 +257,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -296,34 +295,42 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         welcomeLayout.setVisibility(View.GONE);
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         final String title = item.getTitle().toString();
 
-        if (id == R.id.nav_dashboard) {
-            fab.setVisibility(View.GONE);
-            replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()).withIdTitle(title, id));
-        } else if (id == R.id.nav_devices) {
-            fab.setVisibility(View.GONE);
-            replaceFragment(DevicesFragment.newInstance().setDevices(devices).withIdTitle(title, id));
-        } else if (id == R.id.nav_frames) {
-            fab.setVisibility(View.GONE);
-            replaceFragment(FrameFragment.newInstance().setFrames(frames).withIdTitle(title, id));
-        } else if (id == R.id.nav_mqtt) {
+        switch (id) {
+            case R.id.nav_dashboard:
+                fab.setVisibility(View.GONE);
+                replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()).withIdTitle(title, id));
+                break;
+            case R.id.nav_devices:
+                fab.setVisibility(View.GONE);
+                replaceFragment(DevicesFragment.newInstance().setDevices(devices).withIdTitle(title, id));
+                break;
+            case R.id.nav_frames:
+                fab.setVisibility(View.GONE);
+                replaceFragment(FrameFragment.newInstance().setFrames(frames).withIdTitle(title, id));
+                break;
+            case R.id.nav_mqtt:
 
-        } else if (id == R.id.nav_manage) {
+                break;
+            case R.id.nav_manage:
 
-        } else if (id == R.id.nav_arduino) {
+                break;
+            case R.id.nav_arduino:
 
-        } else if (id == R.id.nav_send) {
-            setActionButtonSendPayload();
-            replaceFragment(SendPayloadFragment.newInstance().setDevices(devices).withIdTitle(title, id));
+                break;
+            case R.id.nav_send:
+                setActionButtonSendPayload();
+                replaceFragment(SendPayloadFragment.newInstance().setDevices(devices).withIdTitle(title, id));
+                break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -364,7 +371,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void replaceFragment(Fragment fragment) {
+    private void replaceFragment(Fragment fragment) {
         currentFragment = fragment;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
@@ -431,11 +438,13 @@ public class MainActivity extends AppCompatActivity
 
     private void showErrorIcon(final ImageView iv, @IdRes final int layoutId) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 500 milliseconds, the duration of the animation
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-        }else {
-            v.vibrate(500);
+        if (v != null) {
+            // Vibrate for 500 milliseconds, the duration of the animation
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            }else {
+                v.vibrate(500);
+            }
         }
         runOnUiThread(new Runnable() {
             @Override

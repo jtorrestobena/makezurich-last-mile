@@ -3,7 +3,6 @@ package ch.makezurich.conqueringlastmile.fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,20 @@ import ch.makezurich.conqueringlastmile.util.Util;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnDashboardSelectionListener} interface
- * to handle interaction events.
- * Use the {@link DashboardFragment#newInstance} factory method to
- * create an instance of this fragment.
+/*
+ * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 public class DashboardFragment extends BaseFragment {
     private static final String ARG_NUMDEV = "numdevices";

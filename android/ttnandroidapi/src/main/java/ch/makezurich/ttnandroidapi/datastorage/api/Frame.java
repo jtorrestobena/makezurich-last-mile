@@ -4,6 +4,21 @@ import android.util.Base64;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+/*
+ * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 public class Frame implements Serializable {
     private String device_id;
@@ -38,7 +53,7 @@ public class Frame implements Serializable {
     }
 
     protected String formatHexString() {
-        return insertPeriodically((String.format("%040x", new BigInteger(1, payload))).toUpperCase(), ":", 2);
+        return insertPeriodically((String.format("%02X", new BigInteger(1, payload))).toUpperCase(), ":", 2);
     }
 
     private static String insertPeriodically(

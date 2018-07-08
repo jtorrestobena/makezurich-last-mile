@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 /*
  * Copyright 2016 Fabio Tiriticco / Fabway
- * slightly modified by Jose Antonio Torres Tobena to accomodate the
+ * slightly modified by Jose Antonio Torres Tobena to accommodate the
  * new TTN format
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

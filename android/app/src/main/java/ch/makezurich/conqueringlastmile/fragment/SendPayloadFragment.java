@@ -18,6 +18,22 @@ import java.util.List;
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 
+/*
+ * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link SendPayloadFragment#newInstance} factory method to
@@ -36,8 +52,7 @@ public class SendPayloadFragment extends BaseFragment implements AdapterView.OnI
     }
 
     public static SendPayloadFragment newInstance() {
-        SendPayloadFragment fragment = new SendPayloadFragment();
-        return fragment;
+        return new SendPayloadFragment();
     }
 
     @Override
@@ -56,8 +71,8 @@ public class SendPayloadFragment extends BaseFragment implements AdapterView.OnI
         for (Device d : this.devices) {
             deviceNames.add(d.getName());
         }
-        Spinner spinner = (Spinner) view.findViewById(R.id.spinnerSelectDevice);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+        Spinner spinner = view.findViewById(R.id.spinnerSelectDevice);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item,deviceNames);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
