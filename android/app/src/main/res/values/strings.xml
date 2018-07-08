@@ -100,4 +100,20 @@
 
     <string name="connecting_ttn">Connecting to the TTN</string>
     <string name="fetch_data">Fetching stored data</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="devices">Devices</string>
+    <string name="frames">Frames</string>
+    <string name="mqtt">MQTT</string>
+    <string name="send_payload">Send payload</string>
+    <string name="tools">Tools</string>
+    <string name="apps">Apps</string>
+    <string name="arduino">Arduino</string>
+    <string name="gps_tracker">GPS tracker</string>
+
+    <string name="devices_dash_sum">Data from devices</string>
+    <string name="frames_dash_sum">View last frames</string>
+    <string name="mqtt_dash_sum">View realtime data</string>
+    <string name="send_payload_dash_sum">Send data to devices</string>
+    <string name="tools_dash_sum">View status</string>
+    <string name="arduino_dash_sum">View sample app</string>
 </resources>

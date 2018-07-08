@@ -53,6 +53,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
@@ -69,7 +70,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         DevicesFragment.OnListFragmentInteractionListener,
-        FrameFragment.OnFrameListFragmentInteractionListener, AndroidTTNListener {
+        FrameFragment.OnFrameListFragmentInteractionListener,
+        DashboardFragment.OnDashboardSelectionListener, AndroidTTNListener {
 
     private static final String TAG = "MainActivity";
 
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity
     private List<Device> devices = new ArrayList<>();
     private List<Frame> frames = new ArrayList<>();
 
+    private NavigationView navigationView;
     private FloatingActionButton fab;
     private ConstraintLayout welcomeLayout;
     private boolean isConfigValid;
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         welcomeLayout = findViewById(R.id.welcome_layout);
@@ -293,7 +296,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_devices) {
+        if (id == R.id.nav_dashboard) {
+            fab.setVisibility(View.GONE);
+            replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()));
+        } else if (id == R.id.nav_devices) {
             fab.setVisibility(View.GONE);
             replaceFragment(DevicesFragment.newInstance().setDevices(devices));
         } else if (id == R.id.nav_frames) {
@@ -433,5 +439,11 @@ public class MainActivity extends AppCompatActivity
                 findViewById(layoutId).startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.error));
             }
         });
+    }
+
+    @Override
+    public void onDashboardSelection(int navItem) {
+        navigationView.setCheckedItem(navItem);
+        onNavigationItemSelected(navigationView.getMenu().findItem(navItem));
     }
 }

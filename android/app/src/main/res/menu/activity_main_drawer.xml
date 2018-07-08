@@ -3,39 +3,43 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_baseline_dashboard_24px"
+            android:title="@string/dashboard" />
+        <item
             android:id="@+id/nav_devices"
             android:icon="@drawable/ic_baseline_developer_board_24px"
-            android:title="Devices" />
+            android:title="@string/devices" />
         <item
             android:id="@+id/nav_frames"
             android:icon="@drawable/ic_baseline_cast_24px"
-            android:title="Frames" />
+            android:title="@string/frames" />
         <item
             android:id="@+id/nav_mqtt"
             android:icon="@drawable/ic_baseline_timeline_24px"
-            android:title="Realtime MQTT" />
+            android:title="@string/mqtt" />
 
         <item
             android:id="@+id/nav_send"
             android:icon="@drawable/ic_menu_send"
-            android:title="Send payload" />
+            android:title="@string/send_payload" />
 
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="@string/tools" />
     </group>
 
-    <item android:title="Apps">
+    <item android:title="@string/apps">
         <menu>
             <item
                 android:id="@+id/nav_arduino"
                 android:icon="@drawable/ic_baseline_memory_24px"
-                android:title="Arduino" />
+                android:title="@string/arduino" />
             <item
                 android:id="@+id/nav_gps_tracker"
                 android:icon="@drawable/ic_baseline_location_on_24px"
-                android:title="GPS tracker" />
+                android:title="@string/gps_tracker" />
         </menu>
     </item>
 
