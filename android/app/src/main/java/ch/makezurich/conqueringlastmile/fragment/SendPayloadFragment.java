@@ -1,7 +1,10 @@
 package ch.makezurich.conqueringlastmile.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +43,14 @@ import ch.makezurich.ttnandroidapi.datastorage.api.Device;
  * Use the {@link SendPayloadFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SendPayloadFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
+public class SendPayloadFragment extends BaseFragment implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     private List<Device> devices;
     private EditText payloadText;
     private String selectedDevice = "";
     private List<String> deviceNames = new ArrayList<>();
     private ProgressBar sendProgress;
+    private OnSendPayloadRequest mListener;
 
     public SendPayloadFragment() {
         // Required empty public constructor
@@ -53,11 +58,6 @@ public class SendPayloadFragment extends BaseFragment implements AdapterView.OnI
 
     public static SendPayloadFragment newInstance() {
         return new SendPayloadFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -79,6 +79,9 @@ public class SendPayloadFragment extends BaseFragment implements AdapterView.OnI
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        FloatingActionButton fab = view.findViewById(R.id.fab_send_payload);
+        fab.setOnClickListener(this);
+
         return view;
     }
 
@@ -87,9 +90,35 @@ public class SendPayloadFragment extends BaseFragment implements AdapterView.OnI
         return this;
     }
 
-    public String getPayloadHex() {
+    public interface OnSendPayloadRequest {
+        void onPayloadRequest(@NonNull String device, @NonNull final String payloadHex, @NonNull final SendPayloadFragment sendPayloadFragment);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnSendPayloadRequest) {
+            mListener = (OnSendPayloadRequest) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnSendPayloadRequest");
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        // Clicked on the fab. Check if we can send payload
         checkPayload();
-        return payloadText.getText().toString();
+        final String payloadHex = payloadText.getText().toString();
+        if (selectedDevice == null || selectedDevice.isEmpty()) {
+            Toast.makeText(getContext(), R.string.no_device_selected, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (!payloadHex.isEmpty()) {
+            mListener.onPayloadRequest(selectedDevice, payloadHex, this);
+        } else {
+            Toast.makeText(getContext(), R.string.payload_empty_msg, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void checkPayload() {
@@ -99,10 +128,6 @@ public class SendPayloadFragment extends BaseFragment implements AdapterView.OnI
             final String payloadCorrected = new StringBuilder(payload).insert(payload.length() - 1, "0").toString();
             payloadText.setText(payloadCorrected);
         }
-    }
-
-    public String getSelectedDevice() {
-        return selectedDevice;
     }
 
     @Override

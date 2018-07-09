@@ -66,6 +66,7 @@ import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
+        SendPayloadFragment.OnSendPayloadRequest,
         DevicesFragment.OnListFragmentInteractionListener,
         FrameFragment.OnFrameListFragmentInteractionListener,
         DashboardFragment.OnDashboardSelectionListener, AndroidTTNListener {
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity
     private List<Frame> frames = new ArrayList<>();
 
     private NavigationView navigationView;
-    private FloatingActionButton fab;
     private ConstraintLayout welcomeLayout;
     private boolean isConfigValid;
     private ImageView connectingImageView;
@@ -102,8 +102,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = findViewById(R.id.fab);
-        setActionButtonSendMail();
+        FloatingActionButton fab = findViewById(R.id.fab_mail);
+        setActionButtonSendMail(fab);
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setActionButtonSendMail() {
+    private void setActionButtonSendMail(final FloatingActionButton fab) {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,45 +152,22 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setActionButtonSendPayload() {
-        //TODO this fab should go into the fragment
-        fab.setVisibility(View.VISIBLE);
-        fab.setImageResource(R.drawable.ic_baseline_send_24px);
-        fab.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onPayloadRequest(@NonNull String device, @NonNull String payloadHex, @NonNull final SendPayloadFragment sendPayloadFragment) {
+        mAndroidTTNClient.sendPayloadRaw(device, StringUtil.hexStringToByteArray(payloadHex), new AndroidTTNMessageListener() {
             @Override
-            public void onClick(View view) {
-                if (currentFragment instanceof SendPayloadFragment) {
-                    final SendPayloadFragment sendPayloadFragment = (SendPayloadFragment) currentFragment;
-                    final String payloadHex = sendPayloadFragment.getPayloadHex();
-                    final String device = sendPayloadFragment.getSelectedDevice();
-                    Log.d(TAG, "Send hex payload: " + payloadHex + " to device " + device);
-                    if (device == null || device.isEmpty()) {
-                        Toast.makeText(MainActivity.this, R.string.no_device_selected, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    if (payloadHex != null && !payloadHex.isEmpty()) {
-                        mAndroidTTNClient.sendPayloadRaw(device, StringUtil.hexStringToByteArray(payloadHex), new AndroidTTNMessageListener() {
-                            @Override
-                            public void onSuccess() {
-                                sendPayloadFragment.setSendProgress(false);
-                                Toast.makeText(MainActivity.this, R.string.payload_send_success, Toast.LENGTH_LONG).show();
-                            }
+            public void onSuccess() {
+                sendPayloadFragment.setSendProgress(false);
+                Toast.makeText(MainActivity.this, R.string.payload_send_success, Toast.LENGTH_LONG).show();
+            }
 
-                            @Override
-                            public void onError(Throwable _error) {
-                                sendPayloadFragment.setSendProgress(false);
-                                Toast.makeText(MainActivity.this, R.string.payload_send_error, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        sendPayloadFragment.setSendProgress(true);
-                    } else {
-                        Toast.makeText(MainActivity.this, R.string.payload_empty_msg, Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Log.e(TAG, "Fragment is not send payload");
-                }
+            @Override
+            public void onError(Throwable _error) {
+                sendPayloadFragment.setSendProgress(false);
+                Toast.makeText(MainActivity.this, R.string.payload_send_error, Toast.LENGTH_LONG).show();
             }
         });
+        sendPayloadFragment.setSendProgress(true);
     }
 
     @Override
@@ -233,12 +210,6 @@ public class MainActivity extends AppCompatActivity
                     devices = mTTNDataStore.getDevices();
                     // Frames from last 7 days
                     frames = mTTNDataStore.getAllFrames("7d");
-
-                    /*
-                    final StringBuilder welComeStr = new StringBuilder("You have:\n")
-                            .append(devices.size()).append(" devices\n")
-                            .append(frames.size()).append(" frames\n");
-                    Log.d(TAG, welComeStr.toString());*/
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -304,15 +275,12 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.nav_dashboard:
-                fab.setVisibility(View.GONE);
                 replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()).withIdTitle(title, id));
                 break;
             case R.id.nav_devices:
-                fab.setVisibility(View.GONE);
                 replaceFragment(DevicesFragment.newInstance().setDevices(devices).withIdTitle(title, id));
                 break;
             case R.id.nav_frames:
-                fab.setVisibility(View.GONE);
                 replaceFragment(FrameFragment.newInstance().setFrames(frames).withIdTitle(title, id));
                 break;
             case R.id.nav_mqtt:
@@ -325,7 +293,6 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_send:
-                setActionButtonSendPayload();
                 replaceFragment(SendPayloadFragment.newInstance().setDevices(devices).withIdTitle(title, id));
                 break;
         }
