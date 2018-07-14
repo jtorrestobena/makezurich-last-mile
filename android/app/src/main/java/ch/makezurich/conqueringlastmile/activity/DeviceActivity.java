@@ -21,16 +21,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
+import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
 public class DeviceActivity extends AppCompatActivity implements FrameFragment.OnFrameListFragmentInteractionListener {
     private static final String TAG = DeviceActivity.class.getSimpleName();
 
+    private TTNApplication ttnApp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device);
+
+        ttnApp = (TTNApplication) getApplication();
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.htab_toolbar);
         setSupportActionBar(toolbar);
@@ -99,7 +104,7 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.frames));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames()), getString(R.string.frames));
         adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.activations));
         adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.locations));
         viewPager.setAdapter(adapter);

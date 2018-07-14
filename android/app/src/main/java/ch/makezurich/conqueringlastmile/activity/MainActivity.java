@@ -47,26 +47,23 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ch.makezurich.conqueringlastmile.R;
+import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
+import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 import ch.makezurich.ttnandroidapi.datastorage.api.TTNDataStorageApi;
-import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNClient;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNMessageListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener,
         SendPayloadFragment.OnSendPayloadRequest,
         DevicesFragment.OnListFragmentInteractionListener,
         FrameFragment.OnFrameListFragmentInteractionListener,
@@ -74,26 +71,13 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
 
-
-    private String appId;
-    private String appAccessKey;
-    private String handler;
-    private boolean tlsEnabled;
-    private boolean dataAPIEnabled;
-
-    private AndroidTTNClient mAndroidTTNClient;
-    private TTNDataStorageApi mTTNDataStore;
-
-    private List<Device> devices = new ArrayList<>();
-    private List<Frame> frames = new ArrayList<>();
+    private TTNApplication ttnApp;
 
     private NavigationView navigationView;
     private ConstraintLayout welcomeLayout;
-    private boolean isConfigValid;
     private ImageView connectingImageView;
     private ImageView fetchDataImageView;
 
-    private Fragment currentFragment;
     private FragmentManager fragmentManager;
 
     @Override
@@ -102,6 +86,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ttnApp = (TTNApplication) getApplication();
 
         FloatingActionButton fab = findViewById(R.id.fab_mail);
         setActionButtonSendMail(fab);
@@ -119,17 +104,8 @@ public class MainActivity extends AppCompatActivity
 
         welcomeLayout = findViewById(R.id.welcome_layout);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.registerOnSharedPreferenceChangeListener(this);
-        isConfigValid = loadConfiguration(preferences);
-
         setupViews();
-        Log.d(TAG, "Config valid " + isConfigValid);
-        if (isConfigValid) {
-            startClients();
-        } else {
-            Log.d(TAG, "Client is not configured");
-        }
+        Log.d(TAG, "Config valid " + ttnApp.isConfigValid());
     }
 
     private void setActionButtonSendMail(final FloatingActionButton fab) {
@@ -155,7 +131,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPayloadRequest(@NonNull String device, @NonNull String payloadHex, @NonNull final SendPayloadFragment sendPayloadFragment) {
-        mAndroidTTNClient.sendPayloadRaw(device, StringUtil.hexStringToByteArray(payloadHex), new AndroidTTNMessageListener() {
+        ttnApp.sendPayloadRaw(device, StringUtil.hexStringToByteArray(payloadHex), new AndroidTTNMessageListener() {
             @Override
             public void onSuccess() {
                 sendPayloadFragment.setSendProgress(false);
@@ -172,9 +148,41 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ttnApp.addListener(this);
+        // Start
+        if (ttnApp.isConfigValid()) {
+            ttnApp.reloadDevices(new DeviceRequestCallback() {
+                @Override
+                public void onDevicesLoaded() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchDataImageView.clearAnimation();
+                            fetchDataImageView.setImageResource(R.drawable.ic_baseline_done_24px);
+                        }
+                    });
+                }
+
+                @Override
+                public void onTTNException(TTNDataStorageApi.TTNDataException ttnExc) {
+                    showErrorIcon(fetchDataImageView, R.id.fetch_data_layout);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ttnApp.removeListener(this);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        mAndroidTTNClient.stop();
+        ttnApp.stopClients();
     }
 
     private void setupViews() {
@@ -183,48 +191,6 @@ public class MainActivity extends AppCompatActivity
 
         fetchDataImageView = findViewById(R.id.fetching_data_iv);
         fetchDataImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Start
-        if (isConfigValid) {
-            reloadDevices();
-        }
-    }
-
-    private void startClients() {
-        if (mAndroidTTNClient != null)
-            mAndroidTTNClient.stop();
-
-        mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
-        mAndroidTTNClient.start();
-        mTTNDataStore = new TTNDataStorageApi(appId, appAccessKey);
-    }
-
-    private void reloadDevices() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    devices = mTTNDataStore.getDevices();
-                    // Frames from last 7 days
-                    frames = mTTNDataStore.getAllFrames("7d");
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            fetchDataImageView.clearAnimation();
-                            fetchDataImageView.setImageResource(R.drawable.ic_baseline_done_24px);
-                        }
-                    });
-                } catch (TTNDataStorageApi.TTNDataException ttnExc) {
-                    showErrorIcon(fetchDataImageView, R.id.fetch_data_layout);
-                }
-
-            }
-        }.start();
     }
 
     @Override
@@ -276,13 +242,13 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.nav_dashboard:
-                replaceFragment(DashboardFragment.newInstance(devices.size(), frames.size()).withIdTitle(title, id));
+                replaceFragment(DashboardFragment.newInstance(ttnApp.getDevices().size(), ttnApp.getFrames().size()).withIdTitle(title, id));
                 break;
             case R.id.nav_devices:
-                replaceFragment(DevicesFragment.newInstance().setDevices(devices).withIdTitle(title, id));
+                replaceFragment(DevicesFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
                 break;
             case R.id.nav_frames:
-                replaceFragment(FrameFragment.newInstance().setFrames(frames).withIdTitle(title, id));
+                replaceFragment(FrameFragment.newInstance().setFrames(ttnApp.getFrames()).withIdTitle(title, id));
                 break;
             case R.id.nav_mqtt:
 
@@ -294,7 +260,7 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_send:
-                replaceFragment(SendPayloadFragment.newInstance().setDevices(devices).withIdTitle(title, id));
+                replaceFragment(SendPayloadFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
                 break;
         }
 
@@ -312,49 +278,12 @@ public class MainActivity extends AppCompatActivity
         });*/
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        isConfigValid = loadConfiguration(sharedPreferences);
-        if (isConfigValid) {
-            startClients();
-            reloadDevices();
-        }
-    }
-
-    private boolean loadConfiguration(SharedPreferences preferences) {
-        appId = preferences.getString("ttn_app_id", null);
-        Log.d(TAG, "App id set to " + appId);
-        if (appId == null) return false;
-
-        appAccessKey = preferences.getString("ttn_app_access_key", null);
-        Log.d(TAG, "appAccessKey id set to " + appAccessKey);
-        if (appAccessKey == null) return false;
-
-        handler = preferences.getString("ttn_handler", "eu");
-        tlsEnabled = preferences.getBoolean("enable_tls", true);
-
-        dataAPIEnabled = preferences.getBoolean("enable_data_api", false);
-        Log.d(TAG, handler + " connection with TLS: " + tlsEnabled + " data api " + dataAPIEnabled);
-
-        return true;
-    }
-
     private void replaceFragment(Fragment fragment) {
-        currentFragment = fragment;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(fragment.toString());
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.commit();
-    }
-
-    public List<Frame> getNewFrames() {
-        try {
-            frames = mTTNDataStore.getAllFrames("7d");
-        } catch (TTNDataStorageApi.TTNDataException e) {
-            e.printStackTrace();
-        }
-        return frames;
     }
 
     @Override
@@ -401,7 +330,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPacket(Packet _message) {
-
         showToast(_message.toString());
     }
 

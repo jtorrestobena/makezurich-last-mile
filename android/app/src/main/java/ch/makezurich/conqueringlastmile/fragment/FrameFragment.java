@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
-import ch.makezurich.conqueringlastmile.activity.MainActivity;
+import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
 /*
@@ -105,7 +105,7 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
         new Thread() {
             @Override
             public void run() {
-                frames = ((MainActivity) getActivity()).getNewFrames();
+                frames = ((TTNApplication) getContext().getApplicationContext()).getNewFrames();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
