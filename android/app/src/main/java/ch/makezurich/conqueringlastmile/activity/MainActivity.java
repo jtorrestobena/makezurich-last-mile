@@ -1,4 +1,4 @@
-package ch.makezurich.conqueringlastmile;
+package ch.makezurich.conqueringlastmile.activity;
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
  *
@@ -50,6 +50,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
@@ -359,6 +360,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(Device device) {
         Log.d(TAG, "Clicked on device " + device.getName());
+        startActivity(new Intent(this, DeviceActivity.class));
     }
 
     @Override

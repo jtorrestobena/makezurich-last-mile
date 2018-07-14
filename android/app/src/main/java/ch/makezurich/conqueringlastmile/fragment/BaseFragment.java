@@ -1,8 +1,9 @@
 package ch.makezurich.conqueringlastmile.fragment;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
-import ch.makezurich.conqueringlastmile.MainActivity;
+import ch.makezurich.conqueringlastmile.activity.MainActivity;
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
  *
@@ -32,8 +33,11 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        final MainActivity activity = (MainActivity) getActivity();
-        activity.setTitle(fragmentTitle);
-        activity.setSelectedItem(navItem);
+        Activity activity = getActivity();
+        if (activity instanceof MainActivity) {
+            final MainActivity mainActivity = (MainActivity) activity;
+            mainActivity.setTitle(fragmentTitle);
+            mainActivity.setSelectedItem(navItem);
+        }
     }
 }

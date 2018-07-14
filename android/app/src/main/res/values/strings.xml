@@ -121,4 +121,8 @@
     <string name="email_address">josepantoni.torres@gmail.com</string>
     <string name="email_subject">The Things Network App</string>
     <string name="email_text">I would like to know more about the app sample or the Android TTN SDK.</string>
+
+    <string name="activations">Activations</string>
+    <string name="locations">Locations</string>
+    <string name="device">Device</string>
 </resources>

@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.makezurich.conqueringlastmile.MainActivity;
 import ch.makezurich.conqueringlastmile.R;
+import ch.makezurich.conqueringlastmile.activity.MainActivity;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
 /*
