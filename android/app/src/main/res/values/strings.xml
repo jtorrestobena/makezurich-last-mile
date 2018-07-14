@@ -97,6 +97,8 @@
     <string name="welcome_ttn_account_question">Do you have a TTN account?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
     <string name="connecting_ttn">Connecting to the TTN</string>
     <string name="fetch_data">Fetching stored data</string>
@@ -131,4 +133,10 @@
     <string name="connection_Insecure">Insecure</string>
     <string name="protocol">Protocol</string>
     <string name="certificates">Certificates</string>
+    <string name="dev_name">Name</string>
+    <string name="change_name">Change name</string>
+    <string name="new_name">New name</string>
+
+    <string name="data_saved">Data Saved</string>
+    <string name="data_save_error">Error saving data</string>
 </resources>

@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(Device device) {
         Log.d(TAG, "Clicked on device " + device.getName());
-        startActivity(new Intent(this, DeviceActivity.class));
+        startActivity(new Intent(this, DeviceActivity.class).putExtra(DeviceActivity.EXTRA_DEVICE_ID, device.getName()));
     }
 
     @Override

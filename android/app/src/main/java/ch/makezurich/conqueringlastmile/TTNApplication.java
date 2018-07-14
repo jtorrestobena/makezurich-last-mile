@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.conqueringlastmile.datastorage.DataStorage;
 import ch.makezurich.conqueringlastmile.util.ConnectionSettings;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
@@ -37,12 +38,15 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     private List<AndroidTTNListener> listeners = new ArrayList<>();
 
+    private DataStorage dataStorage;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
+        dataStorage = new DataStorage(this, preferences);
 
         isConfigValid = loadConfiguration(preferences);
         if (isConfigValid) {
@@ -167,5 +171,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     public ConnectionSettings getConnectionSettings() {
         return new ConnectionSettings(tlsEnabled, mAndroidTTNClient);
+    }
+
+    public DataStorage getDataStorage() {
+        return dataStorage;
     }
 }

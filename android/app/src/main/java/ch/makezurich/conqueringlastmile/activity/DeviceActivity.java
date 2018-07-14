@@ -1,5 +1,7 @@
 package ch.makezurich.conqueringlastmile.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -10,18 +12,23 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
+import ch.makezurich.conqueringlastmile.datastorage.AppDataSaveStatus;
+import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
@@ -29,6 +36,10 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
     private static final String TAG = DeviceActivity.class.getSimpleName();
 
     private TTNApplication ttnApp;
+    private String devId;
+    private DeviceProfile deviceProfile;
+
+    public static final String EXTRA_DEVICE_ID = "EXTRA_DEVICE_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +48,18 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
 
         ttnApp = (TTNApplication) getApplication();
 
+        final Intent intent = getIntent();
+        devId = intent.getStringExtra(EXTRA_DEVICE_ID);
+        deviceProfile = ttnApp.getDataStorage().getApplicationData().getProfile(devId);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.htab_toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(R.string.device);
+        if (getSupportActionBar() != null) {
+            if (deviceProfile != null) {
+                getSupportActionBar().setTitle(deviceProfile.friendlyName);
+            } else {
+                getSupportActionBar().setTitle(R.string.device);
+            }
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
@@ -113,7 +133,7 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.device, menu);
         return true;
     }
 
@@ -123,10 +143,60 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.action_settings:
+            case R.id.action_change_name:
+                showChangeNameDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showChangeNameDialog() {
+        final EditText etName = new EditText(this);
+        etName.setText(deviceProfile.friendlyName);
+        AlertDialog.Builder changeName = new AlertDialog.Builder(this);
+        changeName.setMessage(R.string.new_name);
+        changeName.setTitle(R.string.change_name);
+
+        changeName.setView(etName);
+
+        changeName.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                deviceProfile.friendlyName = etName.getText().toString();
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle(deviceProfile.friendlyName);
+                }
+                savedata();
+            }
+        });
+
+        changeName.setNegativeButton(R.string.cancel, null);
+
+        changeName.show();
+    }
+
+    private void savedata() {
+        ttnApp.getDataStorage().getApplicationData().putProfile(devId, deviceProfile);
+        ttnApp.getDataStorage().saveApplicationData(new AppDataSaveStatus() {
+            @Override
+            public void onSaveComplete() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DeviceActivity.this, R.string.data_saved, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onException(Exception e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DeviceActivity.this, R.string.data_save_error, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 
     @Override
