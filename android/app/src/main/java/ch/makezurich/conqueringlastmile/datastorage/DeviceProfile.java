@@ -1,13 +1,16 @@
 package ch.makezurich.conqueringlastmile.datastorage;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 
 public class DeviceProfile implements Serializable {
     private String id;
     private String friendlyName;
-    private Bitmap picture;
+    private transient Bitmap picture;
+    private byte[] pictureData;
 
     public DeviceProfile(String devId) {
         this.id = devId;
@@ -24,5 +27,21 @@ public class DeviceProfile implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public void setPicture(Bitmap picture) {
+        this.picture = picture;
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        picture.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        pictureData = stream.toByteArray();
+    }
+
+    public Bitmap getPicture() {
+        if (picture == null && pictureData != null) {
+            picture = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
+        }
+
+        return picture;
     }
 }

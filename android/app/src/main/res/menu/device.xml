@@ -6,4 +6,10 @@
         android:orderInCategory="100"
         android:title="@string/dev_name"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_change_picture"
+        android:orderInCategory="101"
+        android:icon="@drawable/ic_baseline_camera_alt_24px"
+        android:title="@string/dev_picture"
+        app:showAsAction="never" />
 </menu>

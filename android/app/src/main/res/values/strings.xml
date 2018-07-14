@@ -136,6 +136,7 @@
     <string name="dev_name">Name</string>
     <string name="change_name">Change name</string>
     <string name="new_name">New name</string>
+    <string name="dev_picture">Picture</string>
 
     <string name="data_saved">Data Saved</string>
     <string name="data_save_error">Error saving data</string>

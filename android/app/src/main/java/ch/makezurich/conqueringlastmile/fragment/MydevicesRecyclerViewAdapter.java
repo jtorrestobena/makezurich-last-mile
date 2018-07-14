@@ -1,5 +1,6 @@
 package ch.makezurich.conqueringlastmile.fragment;
 
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment.OnListFragmentInteractionListener;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
+import de.hdodenhof.circleimageview.CircleImageView;
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
  *
@@ -52,7 +54,12 @@ public class MydevicesRecyclerViewAdapter extends RecyclerView.Adapter<Mydevices
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mDeviceNameView.setText(mValues.get(position).getFriendlyName());
+        holder.mDeviceNameView.setText(holder.mItem.getFriendlyName());
+
+        final Bitmap picture = holder.mItem.getPicture();
+        if (picture != null) {
+            holder.mDevicePicImageview.setImageBitmap(picture);
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,12 +81,14 @@ public class MydevicesRecyclerViewAdapter extends RecyclerView.Adapter<Mydevices
     public class ViewHolder extends RecyclerView.ViewHolder {
         final View mView;
         final TextView mDeviceNameView;
+        final CircleImageView mDevicePicImageview;
         DeviceProfile mItem;
 
         ViewHolder(View view) {
             super(view);
             mView = view;
             mDeviceNameView = view.findViewById(R.id.device_name);
+            mDevicePicImageview = view.findViewById(R.id.device_picture);
         }
 
         @Override
