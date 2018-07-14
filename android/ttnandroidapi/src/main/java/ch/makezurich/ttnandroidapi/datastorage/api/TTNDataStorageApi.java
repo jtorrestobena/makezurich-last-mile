@@ -1,8 +1,14 @@
 package ch.makezurich.ttnandroidapi.datastorage.api;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +19,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import ch.makezurich.ttnandroidapi.common.DateTimeConverter;
 
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
@@ -35,6 +43,7 @@ public class TTNDataStorageApi {
 
     private String authKey;
     private String apiUrl;
+    private Gson mGson;
 
     public static class TTNDataException extends Exception {
         private int code = 0;
@@ -57,7 +66,14 @@ public class TTNDataStorageApi {
         }
     }
 
-    public TTNDataStorageApi(String appId, String authKey) {
+    public TTNDataStorageApi(Context context, String appId, String authKey) {
+        // init joda date time
+        JodaTimeAndroid.init(context);
+
+        mGson = new GsonBuilder()
+                .registerTypeAdapter(DateTime.class, new DateTimeConverter())
+                .create();
+
         this.apiUrl = "https://"+ appId +".data.thethingsnetwork.org/api/v2/";
         this.authKey = authKey;
     }
@@ -67,8 +83,7 @@ public class TTNDataStorageApi {
         try {
             String jsonStr= executeQuery("devices");
             if (jsonStr != null) {
-                Gson gson = new Gson();
-                String[] devstr = gson.fromJson(jsonStr, String[].class);
+                String[] devstr = mGson.fromJson(jsonStr, String[].class);
                 if (devstr != null) {
                     for (String d : devstr) {
                         devices.add(new Device(d));
@@ -114,8 +129,7 @@ public class TTNDataStorageApi {
         try {
             String jsonStr= executeQuery("query?last=" + since);
             if (jsonStr != null) {
-                Gson gson = new Gson();
-                Frame[] frames = gson.fromJson(jsonStr, Frame[].class);
+                Frame[] frames = mGson.fromJson(jsonStr, Frame[].class);
                 if (frames != null) {
                     final ArrayList<Frame> frames1ist= new ArrayList<>(Arrays.asList(frames));
                     for (Frame f: frames1ist) {

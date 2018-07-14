@@ -2,8 +2,13 @@ package ch.makezurich.ttnandroidapi.datastorage.api;
 
 import android.util.Base64;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Locale;
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
  *
@@ -23,7 +28,7 @@ import java.math.BigInteger;
 public class Frame implements Serializable {
     private String device_id;
     private String raw;
-    private String time;
+    private DateTime time;
     private byte[] payload;
     private String hex;
     private String hexString;
@@ -36,8 +41,14 @@ public class Frame implements Serializable {
         return raw;
     }
 
-    public String getTimeStamp() {
+    public DateTime getTimeStamp() {
         return time;
+    }
+
+    public String getTimestampString() {
+        DateTimeFormatter formatter = DateTimeFormat.forStyle("LL")
+                .withLocale(Locale.getDefault());
+        return formatter.print( time );
     }
 
     void parse() {

@@ -72,7 +72,7 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
             Context context = listView.getContext();
             recyclerView = (RecyclerView) listView;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new MyframesRecyclerViewAdapter(frames, mListener));
+            recyclerView.setAdapter(new MyframesRecyclerViewAdapter(getContext(), frames, mListener));
         }
         return v;
     }
@@ -109,7 +109,7 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        recyclerView.setAdapter(new MyframesRecyclerViewAdapter(frames, mListener));
+                        recyclerView.setAdapter(new MyframesRecyclerViewAdapter(getContext(), frames, mListener));
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });

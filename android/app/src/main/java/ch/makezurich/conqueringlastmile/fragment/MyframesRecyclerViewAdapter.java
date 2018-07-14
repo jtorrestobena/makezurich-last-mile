@@ -1,5 +1,6 @@
 package ch.makezurich.conqueringlastmile.fragment;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +38,7 @@ public class MyframesRecyclerViewAdapter extends RecyclerView.Adapter<MyframesRe
     private final List<Frame> mValues;
     private final FrameFragment.OnFrameListFragmentInteractionListener mListener;
 
-    public MyframesRecyclerViewAdapter(List<Frame> items, OnFrameListFragmentInteractionListener listener) {
+    public MyframesRecyclerViewAdapter(Context context, List<Frame> items, OnFrameListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -56,7 +57,7 @@ public class MyframesRecyclerViewAdapter extends RecyclerView.Adapter<MyframesRe
         holder.mDeviceIdView.setText("Device: " + frame.getDeviceId());
         holder.mRawDataView.setText("Payload B64: " + frame.getRaw());
         holder.mHexPayloadView.setText("Payload HEX: " + frame.getHexString());
-        holder.mTimeStampView.setText("Timestamp: " + frame.getTimeStamp());
+        holder.mTimeStampView.setText("Timestamp: " + frame.getTimestampString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

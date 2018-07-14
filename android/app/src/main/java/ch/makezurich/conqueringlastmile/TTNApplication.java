@@ -90,9 +90,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         if (mAndroidTTNClient != null)
             mAndroidTTNClient.stop();
 
-        mAndroidTTNClient = new AndroidTTNClient(getApplicationContext(), appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
+        mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
         mAndroidTTNClient.start();
-        mTTNDataStore = new TTNDataStorageApi(appId, appAccessKey);
+        mTTNDataStore = new TTNDataStorageApi(this, appId, appAccessKey);
     }
 
     public void reloadDevices(final DeviceRequestCallback drc) {

@@ -1,4 +1,4 @@
-package ch.makezurich.ttnandroidapi.mqtt.api.data;
+package ch.makezurich.ttnandroidapi.common;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

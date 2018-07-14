@@ -29,7 +29,7 @@ import java.util.List;
 import javax.net.ssl.SSLHandshakeException;
 
 import ch.makezurich.ttnandroidapi.R;
-import ch.makezurich.ttnandroidapi.mqtt.api.data.DateTimeConverter;
+import ch.makezurich.ttnandroidapi.common.DateTimeConverter;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 import ch.makezurich.ttnandroidapi.mqtt.api.tls.SocketFactory;
 
