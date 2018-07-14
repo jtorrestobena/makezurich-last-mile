@@ -125,4 +125,10 @@
     <string name="activations">Activations</string>
     <string name="locations">Locations</string>
     <string name="device">Device</string>
+    <string name="network">Network</string>
+    <string name="connection">Connection</string>
+    <string name="connection_secure">Secure</string>
+    <string name="connection_Insecure">Insecure</string>
+    <string name="protocol">Protocol</string>
+    <string name="certificates">Certificates</string>
 </resources>

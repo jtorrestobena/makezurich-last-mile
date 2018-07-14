@@ -53,6 +53,7 @@ import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
+import ch.makezurich.conqueringlastmile.fragment.ToolsFragment;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
@@ -254,7 +255,7 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.nav_manage:
-
+                replaceFragment(ToolsFragment.newInstance().withIdTitle(title, id));
                 break;
             case R.id.nav_arduino:
 

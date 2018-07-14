@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".fragment.ToolsFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center_horizontal"
+        android:textSize="28sp"
+        android:fontFamily="@font/product_sans_regular"
+        android:text="@string/network" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:weightSum="100">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/product_sans_regular"
+            android:text="@string/connection" />
+        <com.xw.repo.VectorCompatTextView
+            android:id="@+id/connection_status_secure"
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:drawablePadding="5dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/product_sans_regular"
+            app:drawableLeftCompat="@drawable/ic_baseline_lock_24px"
+            app:tintDrawableInTextColor="true"
+            app:drawableAdjustTextHeight="true"
+            android:textColor="@color/green"
+            android:text="@string/connection_secure" />
+        <com.xw.repo.VectorCompatTextView
+            android:id="@+id/connection_status_insecure"
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_weight="60"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:drawablePadding="5dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/product_sans_regular"
+            app:drawableLeftCompat="@drawable/ic_baseline_lock_open_24px"
+            app:tintDrawableInTextColor="true"
+            app:drawableAdjustTextHeight="true"
+            android:textColor="@color/red"
+            android:text="@string/connection_Insecure" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:weightSum="100">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/product_sans_regular"
+            android:text="@string/protocol" />
+        <TextView
+            android:id="@+id/tv_proto"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/product_sans_regular"
+            android:text="__proto__" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center_horizontal"
+        android:textSize="28sp"
+        android:fontFamily="@font/product_sans_regular"
+        android:text="@string/certificates" />
+
+    <ExpandableListView
+        android:id="@+id/expandableListViewCert"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp" />
+
+</LinearLayout>

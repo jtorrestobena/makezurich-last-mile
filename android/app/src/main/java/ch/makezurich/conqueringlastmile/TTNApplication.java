@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.conqueringlastmile.util.ConnectionSettings;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
@@ -162,5 +163,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     @Override
     public void onPacket(Packet _message) {
         for (AndroidTTNListener l : listeners) l.onPacket(_message);
+    }
+
+    public ConnectionSettings getConnectionSettings() {
+        return new ConnectionSettings(tlsEnabled, mAndroidTTNClient);
     }
 }

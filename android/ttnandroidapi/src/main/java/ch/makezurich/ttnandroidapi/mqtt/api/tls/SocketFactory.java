@@ -13,8 +13,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -35,6 +37,7 @@ public class SocketFactory extends javax.net.ssl.SSLSocketFactory{
     private javax.net.ssl.SSLSocketFactory factory;
 
     private static final String TAG = "SocketFactory";
+    private List<Certificate> clientCertificates = new ArrayList<>();
 
     public static class SocketFactoryOptions {
 
@@ -107,6 +110,7 @@ public class SocketFactory extends javax.net.ssl.SSLSocketFactory{
                 String alias = "ttn_c_" + cert_num;
                 caKeyStore.setCertificateEntry(alias, ca);
                 cert_num++;
+                clientCertificates.add(ca);
                 Log.v(TAG, alias + " has cert " + ca);
             }
 
@@ -199,5 +203,9 @@ public class SocketFactory extends javax.net.ssl.SSLSocketFactory{
         SSLSocket r = (SSLSocket)this.factory.createSocket(address, port, localAddress,localPort);
         r.setEnabledProtocols(new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"});
         return r;
+    }
+
+    public List<Certificate> getClientCertificates() {
+        return clientCertificates;
     }
 }

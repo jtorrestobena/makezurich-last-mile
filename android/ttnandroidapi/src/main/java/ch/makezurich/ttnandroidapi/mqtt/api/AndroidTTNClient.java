@@ -22,6 +22,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.joda.time.DateTime;
 
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class AndroidTTNClient {
 
     private MqttAndroidClient mqttAndroidClient;
     private MqttConnectOptions mqttConnectOptions;
+    private SocketFactory socketFactory;
 
     private final String subscriptionTopicUpMessages;
     private final String appId;
@@ -94,7 +96,8 @@ public class AndroidTTNClient {
         if (enableTLS) try {
             SocketFactory.SocketFactoryOptions socketFactoryOptions = new SocketFactory.SocketFactoryOptions();
             socketFactoryOptions.withCaInputStream(context.getResources().openRawResource(R.raw.mqttca));
-            mqttConnectOptions.setSocketFactory(new SocketFactory(socketFactoryOptions));
+            socketFactory = new SocketFactory(socketFactoryOptions);
+            mqttConnectOptions.setSocketFactory(socketFactory);
         } catch (Exception e) {
             Log.d(TAG, "Could not enable TLS: " + e.getMessage());
             e.printStackTrace();
@@ -274,5 +277,9 @@ public class AndroidTTNClient {
             e.printStackTrace();
             listener.onError(e);
         }
+    }
+
+    public List<Certificate> getClientCertificates() {
+        return socketFactory.getClientCertificates();
     }
 }
