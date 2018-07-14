@@ -60,6 +60,11 @@ public class DataStorage {
         }
     }
 
+    public void clearApplicationData() {
+        applicationData = new ApplicationData();
+        saveApplicationData(null);
+    }
+
     public void saveApplicationData(final AppDataSaveStatus status) {
         new Thread() {
             @Override
@@ -68,10 +73,10 @@ public class DataStorage {
                     encrypt(applicationData, new FileOutputStream(new File(context.getFilesDir(), dataFileName)));
                 } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
                     e.printStackTrace();
-                    status.onException(e);
+                    if (status != null) status.onException(e);
                 }
 
-                status.onSaveComplete();
+                if (status != null) status.onSaveComplete();
             }
         }.start();
     }

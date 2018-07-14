@@ -9,6 +9,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
+import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment.OnListFragmentInteractionListener;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 /*
@@ -33,10 +34,10 @@ import ch.makezurich.ttnandroidapi.datastorage.api.Device;
  */
 public class MydevicesRecyclerViewAdapter extends RecyclerView.Adapter<MydevicesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Device> mValues;
+    private final List<DeviceProfile> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MydevicesRecyclerViewAdapter(List<Device> items, OnListFragmentInteractionListener listener) {
+    public MydevicesRecyclerViewAdapter(List<DeviceProfile> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -51,7 +52,7 @@ public class MydevicesRecyclerViewAdapter extends RecyclerView.Adapter<Mydevices
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mDeviceNameView.setText(mValues.get(position).getName());
+        holder.mDeviceNameView.setText(mValues.get(position).getFriendlyName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +74,7 @@ public class MydevicesRecyclerViewAdapter extends RecyclerView.Adapter<Mydevices
     public class ViewHolder extends RecyclerView.ViewHolder {
         final View mView;
         final TextView mDeviceNameView;
-        Device mItem;
+        DeviceProfile mItem;
 
         ViewHolder(View view) {
             super(view);

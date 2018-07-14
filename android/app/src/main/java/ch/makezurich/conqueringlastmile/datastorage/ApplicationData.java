@@ -10,8 +10,7 @@ public class ApplicationData implements Serializable {
     public DeviceProfile getProfile(String id) {
         DeviceProfile dp = deviceProfileMap.get(id);
         if (dp == null) {
-            dp = new DeviceProfile();
-            dp.friendlyName = id;
+            dp = new DeviceProfile(id);
         }
         return dp;
     }

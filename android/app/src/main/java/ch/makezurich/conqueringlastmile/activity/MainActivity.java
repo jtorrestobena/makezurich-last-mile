@@ -49,6 +49,7 @@ import android.widget.Toast;
 
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
+import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
@@ -56,7 +57,6 @@ import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
 import ch.makezurich.conqueringlastmile.fragment.ToolsFragment;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
-import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 import ch.makezurich.ttnandroidapi.datastorage.api.TTNDataStorageApi;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity
                 replaceFragment(DashboardFragment.newInstance(ttnApp.getDevices().size(), ttnApp.getFrames().size()).withIdTitle(title, id));
                 break;
             case R.id.nav_devices:
-                replaceFragment(DevicesFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
+                replaceFragment(DevicesFragment.newInstance().withIdTitle(title, id));
                 break;
             case R.id.nav_frames:
                 replaceFragment(FrameFragment.newInstance().setFrames(ttnApp.getFrames()).withIdTitle(title, id));
@@ -288,9 +288,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(Device device) {
-        Log.d(TAG, "Clicked on device " + device.getName());
-        startActivity(new Intent(this, DeviceActivity.class).putExtra(DeviceActivity.EXTRA_DEVICE_ID, device.getName()));
+    public void onListFragmentInteraction(DeviceProfile device) {
+        Log.d(TAG, "Clicked on device " + device.getId());
+        startActivity(new Intent(this, DeviceActivity.class).putExtra(DeviceActivity.EXTRA_DEVICE_ID, device.getId()));
     }
 
     @Override

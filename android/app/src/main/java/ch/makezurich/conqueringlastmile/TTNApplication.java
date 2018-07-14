@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.datastorage.DataStorage;
+import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.util.ConnectionSettings;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
@@ -32,6 +33,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private TTNDataStorageApi mTTNDataStore;
 
     private List<Device> devices = new ArrayList<>();
+    private List<DeviceProfile> devicesProfiles = new ArrayList<>();
     private List<Frame> frames = new ArrayList<>();
 
     private boolean isConfigValid;
@@ -105,6 +107,11 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
             public void run() {
                 try {
                     devices = mTTNDataStore.getDevices();
+                    // Process profiles
+                    devicesProfiles = new ArrayList<>();
+                    for (Device d : devices) {
+                        devicesProfiles.add(dataStorage.getApplicationData().getProfile(d.getName()));
+                    }
                     // Frames from last 7 days
                     frames = mTTNDataStore.getAllFrames("7d");
 
@@ -135,6 +142,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     public List<Device> getDevices() {
         return devices;
+    }
+    public List<DeviceProfile> getProfiles() {
+        return devicesProfiles;
     }
 
     public List<Frame> getFrames() {

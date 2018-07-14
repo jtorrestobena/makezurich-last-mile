@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
-import ch.makezurich.ttnandroidapi.datastorage.api.Device;
+import ch.makezurich.conqueringlastmile.TTNApplication;
+import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
@@ -32,7 +33,9 @@ import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 public class DevicesFragment extends BaseFragment {
 
     private OnListFragmentInteractionListener mListener;
-    private List<Device> devices = new ArrayList<>();
+    private List<DeviceProfile> devices = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private TTNApplication app;
 
     public DevicesFragment() {
     }
@@ -45,6 +48,7 @@ public class DevicesFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        app = (TTNApplication) getContext().getApplicationContext();
     }
 
     @Override
@@ -55,16 +59,17 @@ public class DevicesFragment extends BaseFragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new MydevicesRecyclerViewAdapter(devices, mListener));
         }
         return view;
     }
 
-    public DevicesFragment setDevices(List<Device> devices) {
-        this.devices = devices;
-        return this;
+    @Override
+    public void onResume() {
+        super.onResume();
+        devices = app.getProfiles();
+        recyclerView.setAdapter(new MydevicesRecyclerViewAdapter(devices, mListener));
     }
 
     @Override
@@ -95,6 +100,6 @@ public class DevicesFragment extends BaseFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Device device);
+        void onListFragmentInteraction(DeviceProfile device);
     }
 }

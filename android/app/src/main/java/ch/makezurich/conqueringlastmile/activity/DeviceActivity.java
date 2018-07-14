@@ -55,7 +55,7 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             if (deviceProfile != null) {
-                getSupportActionBar().setTitle(deviceProfile.friendlyName);
+                getSupportActionBar().setTitle(deviceProfile.getFriendlyName());
             } else {
                 getSupportActionBar().setTitle(R.string.device);
             }
@@ -152,7 +152,7 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
 
     private void showChangeNameDialog() {
         final EditText etName = new EditText(this);
-        etName.setText(deviceProfile.friendlyName);
+        etName.setText(deviceProfile.getFriendlyName());
         AlertDialog.Builder changeName = new AlertDialog.Builder(this);
         changeName.setMessage(R.string.new_name);
         changeName.setTitle(R.string.change_name);
@@ -161,9 +161,9 @@ public class DeviceActivity extends AppCompatActivity implements FrameFragment.O
 
         changeName.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                deviceProfile.friendlyName = etName.getText().toString();
+                deviceProfile.setFriendlyName(etName.getText().toString());
                 if (getSupportActionBar() != null) {
-                    getSupportActionBar().setTitle(deviceProfile.friendlyName);
+                    getSupportActionBar().setTitle(deviceProfile.getFriendlyName());
                 }
                 savedata();
             }
