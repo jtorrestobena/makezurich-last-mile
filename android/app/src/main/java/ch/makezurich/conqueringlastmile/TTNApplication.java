@@ -51,6 +51,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private boolean showNotifications;
     private String notificationRingtone;
     private boolean notificationVibrate;
+    private boolean debugEnabled;
 
     private List<AndroidTTNListener> listeners = new ArrayList<>();
     private DataStorage dataStorage;
@@ -85,7 +86,10 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
                 notificationRingtone = sharedPreferences.getString(key, null);
                 return;
             case "notifications_new_message_vibrate":
-                notificationVibrate =  sharedPreferences.getBoolean(key, true);
+                notificationVibrate = sharedPreferences.getBoolean(key, true);
+                return;
+            case "enable_debug":
+                debugEnabled = sharedPreferences.getBoolean(key, false);
                 return;
         }
         // For all other cases revalidate the configuration entirely and try to reload clients
@@ -120,7 +124,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
         notificationRingtone = preferences.getString("notifications_new_message_ringtone", null);
 
-        notificationVibrate =  preferences.getBoolean("notifications_new_message_vibrate", true);
+        notificationVibrate = preferences.getBoolean("notifications_new_message_vibrate", true);
+
+        debugEnabled = preferences.getBoolean("enable_debug", false);
 
         return true;
     }
@@ -286,5 +292,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(notificationId, notiBuilder.build());
         notificationId++;
+    }
+
+    public boolean isDebugEnabled() {
+        return debugEnabled;
     }
 }

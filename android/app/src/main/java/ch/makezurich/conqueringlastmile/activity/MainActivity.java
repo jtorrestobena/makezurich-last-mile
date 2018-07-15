@@ -284,15 +284,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showToast(final String toastMessage) {
-        /* TODO add flag in config settings
-        if (BuildConfig.DEBUG) {
+        if (ttnApp.isDebugEnabled()) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
                 }
             });
-        }*/
+        }
     }
 
     private void replaceFragment(Fragment fragment) {

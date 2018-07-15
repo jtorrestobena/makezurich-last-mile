@@ -74,9 +74,6 @@
 
     <string-array name="multi_select_list_preference_default_value" />
 
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_title_new_message_notifications">New message notifications</string>
 
@@ -149,4 +146,6 @@
     <string name="port">Port:</string>
     <string name="counter">Counter:</string>
     <string name="payload">Payload:</string>
+    <string name="show_debug_title">Show debug data</string>
+    <string name="show_debug_summary">Troubleshoot application problems</string>
 </resources>
