@@ -44,13 +44,13 @@ public class Packet {
                    }}
     */
 
-    @SerializedName("payload_raw")
+    @SerializedName("app_id")
     String mAppId;
 
     @SerializedName("dev_id")
     String mDevId;
 
-    @SerializedName("app_id")
+    @SerializedName("payload_raw")
     String mPayload;
 
     @SerializedName("port")

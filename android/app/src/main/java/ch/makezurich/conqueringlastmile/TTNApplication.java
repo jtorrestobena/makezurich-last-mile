@@ -1,13 +1,22 @@
 package ch.makezurich.conqueringlastmile;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.makezurich.conqueringlastmile.activity.MainActivity;
 import ch.makezurich.conqueringlastmile.datastorage.DataStorage;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.util.ConnectionSettings;
@@ -37,10 +46,15 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private List<Frame> frames = new ArrayList<>();
 
     private boolean isConfigValid;
+    private boolean showNotifications;
+    private String notificationRingtone;
+    private boolean notificationVibrate;
 
     private List<AndroidTTNListener> listeners = new ArrayList<>();
-
     private DataStorage dataStorage;
+
+    private static final String CHANNEL_ID = "defaultTTNChannel";
+    private int notificationId = 0;
 
     @Override
     public void onCreate() {
@@ -58,6 +72,22 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        switch (key) {
+            case "notifications_new_message":
+                showNotifications = sharedPreferences.getBoolean(key, true);
+                if (showNotifications) {
+                    createNotificationChannel();
+                }
+                return;
+            case "notifications_new_message_ringtone":
+                notificationRingtone = sharedPreferences.getString(key, null);
+                return;
+            case "notifications_new_message_vibrate":
+                notificationVibrate =  sharedPreferences.getBoolean(key, true);
+                return;
+        }
+        // For all other cases revalidate the configuration entirely and try to reload clients
+
         isConfigValid = loadConfiguration(sharedPreferences);
         if (isConfigValid) {
             startClients();
@@ -79,6 +109,16 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
         dataAPIEnabled = preferences.getBoolean("enable_data_api", false);
         Log.d(TAG, handler + " connection with TLS: " + tlsEnabled + " data api " + dataAPIEnabled);
+
+        showNotifications = preferences.getBoolean("notifications_new_message", true);
+
+        if (showNotifications) {
+            createNotificationChannel();
+        }
+
+        notificationRingtone = preferences.getString("notifications_new_message_ringtone", null);
+
+        notificationVibrate =  preferences.getBoolean("notifications_new_message_vibrate", true);
 
         return true;
     }
@@ -176,6 +216,10 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     @Override
     public void onPacket(Packet _message) {
+        if (showNotifications) {
+            showNotification(_message);
+        }
+
         for (AndroidTTNListener l : listeners) l.onPacket(_message);
     }
 
@@ -185,5 +229,50 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     public DataStorage getDataStorage() {
         return dataStorage;
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void showNotification(Packet _msg) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setColor(getResources().getColor(R.color.colorPrimaryDark))
+                .setContentTitle(getString(R.string.message_from, _msg.getDevEUI()))
+                .setContentText(_msg.getPayload())
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(_msg.getPayload()))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        if (notificationVibrate) {
+            notiBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+        }
+
+        if (notificationRingtone != null && !notificationRingtone.isEmpty()) {
+            notiBuilder.setSound(Uri.parse(notificationRingtone));
+        }
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(notificationId, notiBuilder.build());
+        notificationId++;
     }
 }
