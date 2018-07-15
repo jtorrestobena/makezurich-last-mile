@@ -71,6 +71,8 @@ public class AndroidTTNClient {
     private final String appId;
     private List<AndroidTTNListener> listeners = new ArrayList<>();
 
+    private Class<? extends Packet> packetClass = Packet.class;
+
     public AndroidTTNClient(Context context, String appId, String appAccessKey, String handler, String filter, boolean enableTLS, final AndroidTTNListener listener) {
         this.appId = appId;
         // init joda date time
@@ -178,8 +180,7 @@ public class AndroidTTNClient {
                     String jsonStr = new String(message.getPayload());
                     Log.d(TAG, "Message arrived: " + jsonStr);
                     try {
-
-                        Packet packet = mGson.fromJson(jsonStr, Packet.class);
+                        Packet packet = mGson.fromJson(jsonStr, packetClass);
                         for (AndroidTTNListener l : listeners) {
                             l.onPacket(packet);
                         }
@@ -241,6 +242,10 @@ public class AndroidTTNClient {
     public void stop() {
         mqttAndroidClient.unregisterResources();
         mqttAndroidClient.close();
+    }
+
+    public void setPacketClass(Class<? extends Packet> packetClass) {
+        this.packetClass = packetClass;
     }
 
     public void sendPayloadRaw(String device, byte[] payload, final AndroidTTNMessageListener listener) {

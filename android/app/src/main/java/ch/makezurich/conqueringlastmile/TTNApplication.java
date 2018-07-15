@@ -20,6 +20,7 @@ import java.util.List;
 import ch.makezurich.conqueringlastmile.activity.MainActivity;
 import ch.makezurich.conqueringlastmile.datastorage.DataStorage;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
+import ch.makezurich.conqueringlastmile.packetclass.DemoPayloadPacket;
 import ch.makezurich.conqueringlastmile.util.ConnectionSettings;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
@@ -145,6 +146,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
             mAndroidTTNClient.stop();
 
         mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
+        mAndroidTTNClient.setPacketClass(DemoPayloadPacket.class);
         mAndroidTTNClient.start();
         mTTNDataStore = new TTNDataStorageApi(this, appId, appAccessKey);
     }
