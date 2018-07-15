@@ -64,9 +64,6 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
             emptyView = view.findViewById(R.id.empty_view);
             recyclerView.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.GONE);
         }
 
         return view;
