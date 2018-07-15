@@ -137,4 +137,26 @@ public class Metadata implements Serializable {
     public Double getLongitude() {
         return mLongitude;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("Packet:")
+                .append("\nmFrequency: ").append(mFrequency)
+                .append("\nmDatarate: ").append(mDatarate)
+                .append("\nmCodingRate: ").append(mCodingRate)
+                .append("\nmGatewayTimestamp: ").append(mGatewayTimestamp)
+                .append("\nmGateWayTime: ").append(mGateWayTime)
+                .append("\nmChannel: ").append(mChannel)
+                .append("\nmServerTime: ").append(mServerTime)
+                .append("\nmRSSI: ").append(mRSSI)
+                .append("\nmLSNR: ").append(mLSNR)
+                .append("\nmRFChain: ").append(mRFChain)
+                .append("\nmCRC: ").append(mCRC)
+                .append("\nmModulation: ").append(mModulation)
+                .append("\nmGatewayEUI: ").append(mGatewayEUI)
+                .append("\nmAltitude: ").append(mAltitude)
+                .append("\nmCRC: ").append(mCRC)
+                .append("\nmLongitude: ").append(mLongitude)
+                .toString();
+    }
 }
