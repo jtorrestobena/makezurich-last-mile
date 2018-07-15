@@ -23,6 +23,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans_regular"
                 android:text="@string/device_select" />
 
             <Spinner
@@ -38,12 +39,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans_regular"
                 android:text="@string/payload_hex" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/payload_hex_input"
+                android:fontFamily="@font/product_sans_regular"
                 android:digits="0123456789ABCDEF"
                 android:inputType="textCapCharacters" />
         </LinearLayout>

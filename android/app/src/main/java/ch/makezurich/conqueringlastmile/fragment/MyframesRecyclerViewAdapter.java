@@ -57,7 +57,7 @@ public class MyframesRecyclerViewAdapter extends RecyclerView.Adapter<MyframesRe
         holder.mDeviceIdView.setText("Device: " + frame.getDeviceId());
         holder.mRawDataView.setText("Payload B64: " + frame.getRaw());
         holder.mHexPayloadView.setText("Payload HEX: " + frame.getHexString());
-        holder.mTimeStampView.setText("Timestamp: " + frame.getTimestampString());
+        holder.mTimeStampView.setText(frame.getTimestampString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

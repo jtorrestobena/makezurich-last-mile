@@ -54,7 +54,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/devices"
-                            android:textColor="#000"
+                            android:fontFamily="@font/product_sans_bold"
+                            android:textColor="@color/black_color"
                             android:textSize="18dp" />
                         <View
                             android:layout_width="match_parent"
@@ -66,6 +67,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/devices_dash_sum"
+                            android:fontFamily="@font/product_sans_regular"
                             android:textColor="@android:color/darker_gray"/>
 
                     </LinearLayout>
@@ -104,7 +106,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/frames"
-                            android:textColor="#000"
+                            android:fontFamily="@font/product_sans_bold"
+                            android:textColor="@color/black_color"
                             android:textSize="18dp" />
                         <View
                             android:layout_width="match_parent"
@@ -116,6 +119,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/frames_dash_sum"
+                            android:fontFamily="@font/product_sans_regular"
                             android:textColor="@android:color/darker_gray"/>
 
                     </LinearLayout>
@@ -163,7 +167,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/mqtt"
-                            android:textColor="#000"
+                            android:fontFamily="@font/product_sans_bold"
+                            android:textColor="@color/black_color"
                             android:textSize="18dp" />
                         <View
                             android:layout_width="match_parent"
@@ -174,6 +179,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/mqtt_dash_sum"
+                            android:fontFamily="@font/product_sans_regular"
                             android:textColor="@android:color/darker_gray"/>
 
                     </LinearLayout>
@@ -212,7 +218,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/send_payload"
-                            android:textColor="#000"
+                            android:fontFamily="@font/product_sans_bold"
+                            android:textColor="@color/black_color"
                             android:textSize="18dp" />
                         <View
                             android:layout_width="match_parent"
@@ -223,6 +230,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/send_payload_dash_sum"
+                            android:fontFamily="@font/product_sans_regular"
                             android:textColor="@android:color/darker_gray"/>
 
                     </LinearLayout>
@@ -269,7 +277,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/tools"
-                            android:textColor="#000"
+                            android:fontFamily="@font/product_sans_bold"
+                            android:textColor="@color/black_color"
                             android:textSize="18dp" />
                         <View
                             android:layout_width="match_parent"
@@ -281,6 +290,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/tools_dash_sum"
+                            android:fontFamily="@font/product_sans_regular"
                             android:textColor="@android:color/darker_gray" />
 
                     </LinearLayout>
@@ -319,7 +329,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/arduino"
-                            android:textColor="#000"
+                            android:fontFamily="@font/product_sans_bold"
+                            android:textColor="@color/black_color"
                             android:textSize="18dp" />
                         <View
                             android:layout_width="match_parent"
@@ -331,6 +342,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/arduino_dash_sum"
+                            android:fontFamily="@font/product_sans_regular"
                             android:textColor="@android:color/darker_gray" />
 
                     </LinearLayout>

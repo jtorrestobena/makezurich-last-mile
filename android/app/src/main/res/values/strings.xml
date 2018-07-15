@@ -148,4 +148,5 @@
     <string name="payload">Payload:</string>
     <string name="show_debug_title">Show debug data</string>
     <string name="show_debug_summary">Troubleshoot application problems</string>
+    <string name="copied_clipboard">Copied to clipboard</string>
 </resources>

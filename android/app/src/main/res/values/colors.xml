@@ -14,4 +14,7 @@
     <color name="darkpurple">#a569bd</color>
     <color name="pinky">#fe104d</color>
     <color name="lightgray">#808080</color>
+
+    <color name="black_700">#818181</color>
+    <color name="black_color">#000</color>
 </resources>

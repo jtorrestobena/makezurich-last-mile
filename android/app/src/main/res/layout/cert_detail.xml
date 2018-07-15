@@ -7,6 +7,7 @@
         android:id="@+id/certificateListItem"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/product_sans_regular"
         android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
         android:paddingTop="10dp"
         android:paddingBottom="10dp" />
