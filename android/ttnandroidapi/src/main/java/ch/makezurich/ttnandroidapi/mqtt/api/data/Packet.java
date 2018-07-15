@@ -2,6 +2,8 @@ package ch.makezurich.ttnandroidapi.mqtt.api.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /*
  * Copyright 2016 Fabio Tiriticco / Fabway
  * slightly modified by Jose Antonio Torres Tobena to accommodate the
@@ -22,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by fabiotiriticco on 5 June 2016.
  *
  */
-public class Packet {
+public class Packet implements Serializable {
 
     /*
     Example incoming uplink packet:
@@ -82,6 +84,10 @@ public class Packet {
 
     public int getCounter() {
         return mCounter;
+    }
+
+    public String getDevId() {
+        return mDevId;
     }
 
     public String getDevEUI() {

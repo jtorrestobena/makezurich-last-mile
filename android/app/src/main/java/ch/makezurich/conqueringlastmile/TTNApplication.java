@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -249,13 +250,15 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     private void showNotification(Packet _msg) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("value", _msg);
+        intent.putExtra(MainActivity.EXTRA_PACKET, bundle);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setColor(getResources().getColor(R.color.colorPrimaryDark))
-                .setContentTitle(getString(R.string.message_from, _msg.getDevEUI()))
+                .setContentTitle(getString(R.string.message_from, _msg.getDevId()))
                 .setContentText(_msg.getPayload())
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(_msg.getPayload()))

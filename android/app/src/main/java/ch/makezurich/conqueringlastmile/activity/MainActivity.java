@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         DashboardFragment.OnDashboardSelectionListener, AndroidTTNListener {
 
     private static final String TAG = "MainActivity";
+    public static final String EXTRA_PACKET = "EXTRA_PACKET";
 
     private TTNApplication ttnApp;
 
@@ -152,6 +153,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
+        // TODO handle extra
+        final Bundle bundleExtra = getIntent().getBundleExtra(EXTRA_PACKET);
         ttnApp.addListener(this);
         // Start
         if (ttnApp.isConfigValid()) {

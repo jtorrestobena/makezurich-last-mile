@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
+
 /*
  * Copyright 2016 Fabio Tiriticco / Fabway
  *
@@ -22,7 +24,7 @@ import org.joda.time.DateTime;
  * Created by fabiotiriticco on 5 June 2016.
  *
  */
-public class Metadata {
+public class Metadata implements Serializable {
 
     @SerializedName("frequency")
     Double mFrequency;
