@@ -47,6 +47,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import ch.makezurich.conqueringlastmile.BuildConfig;
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
@@ -271,12 +272,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showToast(final String toastMessage) {
-        /*runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
-            }
-        });*/
+        if (BuildConfig.DEBUG) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 
     private void replaceFragment(Fragment fragment) {
