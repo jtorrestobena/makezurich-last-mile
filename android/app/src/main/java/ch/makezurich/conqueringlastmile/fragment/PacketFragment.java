@@ -28,6 +28,7 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
     private RecyclerView recyclerView;
     private List<Packet> sessionPackets;
     private MyPacketRecyclerViewAdapter packetRecyclerViewAdapter;
+    private View emptyView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,12 +55,20 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
         View view = inflater.inflate(R.layout.fragment_packet_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            recyclerView = (RecyclerView) view;
-            sessionPackets = ttnApp.getSessionPackets();
-            packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(sessionPackets, mListener);
-            recyclerView.setAdapter(packetRecyclerViewAdapter);
+        recyclerView = view.findViewById(R.id.list);
+        sessionPackets = ttnApp.getSessionPackets();
+        packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(sessionPackets, mListener);
+        recyclerView.setAdapter(packetRecyclerViewAdapter);
+
+        if (sessionPackets == null || sessionPackets.isEmpty()){
+            emptyView = view.findViewById(R.id.empty_view);
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
         }
+
         return view;
     }
 
@@ -113,6 +122,11 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (emptyView != null) {
+                    emptyView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+
                 packetRecyclerViewAdapter.notifyDataSetChanged();
                 recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
             }

@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color>
     <color name="white_90_alpha">#EBFFFFFF</color>
+    <color name="white_50_alpha">#7DFFFFFF</color>
     <color name="red">#FF0000</color>
 
     <color name="purple">#7c4dff</color>

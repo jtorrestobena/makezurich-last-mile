@@ -149,4 +149,5 @@
     <string name="show_debug_title">Show debug data</string>
     <string name="show_debug_summary">Troubleshoot application problems</string>
     <string name="copied_clipboard">Copied to clipboard</string>
+    <string name="no_frames_yet">No frames yet</string>
 </resources>
