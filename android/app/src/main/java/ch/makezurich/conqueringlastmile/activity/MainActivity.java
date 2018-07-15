@@ -47,13 +47,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import ch.makezurich.conqueringlastmile.BuildConfig;
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
+import ch.makezurich.conqueringlastmile.fragment.PacketFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
 import ch.makezurich.conqueringlastmile.fragment.ToolsFragment;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
@@ -68,11 +68,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         SendPayloadFragment.OnSendPayloadRequest,
         DevicesFragment.OnListFragmentInteractionListener,
+        PacketFragment.OnPacketFragmentSelectionListener,
         FrameFragment.OnFrameListFragmentInteractionListener,
         DashboardFragment.OnDashboardSelectionListener, AndroidTTNListener {
 
     private static final String TAG = "MainActivity";
     public static final String EXTRA_PACKET = "EXTRA_PACKET";
+    public static final String EXTRA_PACKET_VALUE = "EXTRA_PACKET_VALUE";
 
     private TTNApplication ttnApp;
 
@@ -155,6 +157,13 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         // TODO handle extra
         final Bundle bundleExtra = getIntent().getBundleExtra(EXTRA_PACKET);
+        if (bundleExtra != null) {
+            final Object o = bundleExtra.get(EXTRA_PACKET_VALUE);
+            if (o != null && o instanceof Packet) {
+                startPacketDetailActivity((Packet) o);
+            }
+        }
+
         ttnApp.addListener(this);
         // Start
         if (ttnApp.isConfigValid()) {
@@ -256,7 +265,7 @@ public class MainActivity extends AppCompatActivity
                 replaceFragment(FrameFragment.newInstance().setFrames(ttnApp.getFrames()).withIdTitle(title, id));
                 break;
             case R.id.nav_mqtt:
-
+                replaceFragment(PacketFragment.newInstance().withIdTitle(title, id));
                 break;
             case R.id.nav_manage:
                 replaceFragment(ToolsFragment.newInstance().withIdTitle(title, id));
@@ -275,6 +284,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showToast(final String toastMessage) {
+        /* TODO add flag in config settings
         if (BuildConfig.DEBUG) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -282,7 +292,7 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_LONG).show();
                 }
             });
-        }
+        }*/
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -368,5 +378,15 @@ public class MainActivity extends AppCompatActivity
 
     public void setSelectedItem(int navItem) {
         navigationView.setCheckedItem(navItem);
+    }
+
+    @Override
+    public void onPacketSelected(Packet packet) {
+        startPacketDetailActivity(packet);
+    }
+
+    private void startPacketDetailActivity(Packet packet) {
+        Log.d(TAG, "Selected packet for inspection " + packet);
+        // TODO start fragment for showing packet details
     }
 }

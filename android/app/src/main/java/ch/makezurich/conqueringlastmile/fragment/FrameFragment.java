@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
@@ -79,6 +80,7 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
 
     public FrameFragment setFrames(List<Frame> frames) {
         this.frames = frames;
+        Collections.reverse(this.frames);
         return this;
     }
 
@@ -106,6 +108,7 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
             @Override
             public void run() {
                 frames = ((TTNApplication) getContext().getApplicationContext()).getNewFrames();
+                Collections.reverse(frames);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -130,16 +133,4 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
     public interface OnFrameListFragmentInteractionListener {
         void onListFragmentInteraction(Frame item);
     }
-/*
-    public FrameFragment setRefreshListener(SwipeRefreshLayout.OnRefreshListener listener) {
-        swipeRefreshLayout.setOnRefreshListener(listener);
-        return this;
-    }
-
-    public void updateFrames(List<Frame> newFrameList) {
-        swipeRefreshLayout.setRefreshing(false);
-        frames = newFrameList;
-        recyclerView.setAdapter(new MyframesRecyclerViewAdapter(frames, mListener));
-    }
-    */
 }

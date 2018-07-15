@@ -45,6 +45,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private List<Device> devices = new ArrayList<>();
     private List<DeviceProfile> devicesProfiles = new ArrayList<>();
     private List<Frame> frames = new ArrayList<>();
+    private List<Packet> sessionPackets = new ArrayList<>();
 
     private boolean isConfigValid;
     private boolean showNotifications;
@@ -192,8 +193,14 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         return frames;
     }
 
+    public List<Packet> getSessionPackets() {
+        return sessionPackets;
+    }
+
     public void addListener(AndroidTTNListener listener) {
-        listeners.add(listener);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     public void removeListener(AndroidTTNListener listener) {
@@ -217,6 +224,8 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     @Override
     public void onPacket(Packet _message) {
+        sessionPackets.add(_message);
+
         if (showNotifications) {
             showNotification(_message);
         }
@@ -251,7 +260,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private void showNotification(Packet _msg) {
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("value", _msg);
+        bundle.putSerializable(MainActivity.EXTRA_PACKET_VALUE, _msg);
         intent.putExtra(MainActivity.EXTRA_PACKET, bundle);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
