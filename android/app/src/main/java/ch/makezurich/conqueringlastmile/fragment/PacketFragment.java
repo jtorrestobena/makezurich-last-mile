@@ -72,6 +72,9 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
     @Override
     public void onResume() {
         super.onResume();
+        if (!sessionPackets.isEmpty()) {
+            refreshFrames();
+        }
         ttnApp.addListener(this);
     }
 
@@ -119,15 +122,19 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (emptyView != null) {
-                    emptyView.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
-                }
-
-                packetRecyclerViewAdapter.notifyDataSetChanged();
-                recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
+                refreshFrames();
             }
         });
+    }
+
+    private void refreshFrames() {
+        if (emptyView != null) {
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
+        packetRecyclerViewAdapter.notifyDataSetChanged();
+        recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
     }
 
     /**
