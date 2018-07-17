@@ -10,7 +10,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -42,15 +42,14 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView ivTabHeader;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
     private Toolbar toolbar;
-    private ViewPagerAdapter adapter;
 
     public static final String EXTRA_DEVICE_ID = "EXTRA_DEVICE_ID";
 
     // Height and with for the device pictures
     private static final int DEVICE_PICTURE_WIDTH = 1280;
     private static final int DEVICE_PICTURE_HEIGHT = 720;
+    private int currentItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +58,6 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         devId = intent.getStringExtra(EXTRA_DEVICE_ID);
         ttnApp = (TTNApplication) getApplication();
         deviceProfile = ttnApp.getDataStorage().getApplicationData().getProfile(devId);
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames()), getString(R.string.frames));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.activations));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.locations));
-
         onConfigurationChanged(getResources().getConfiguration());
     }
 
@@ -84,7 +78,11 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames()), getString(R.string.frames));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.activations));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.locations));
+        ViewPager viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
         viewPager.setAdapter(adapter);
 
         tabLayout = (TabLayout) findViewById(R.id.htab_tabs);
@@ -92,6 +90,8 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
 
         ivTabHeader = findViewById(R.id.htab_header);
         collapsingToolbarLayout = findViewById(R.id.htab_collapse_toolbar);
+
+        viewPager.setCurrentItem(currentItem);
 
         try {
             Bitmap bitmap = deviceProfile.getPicture();
@@ -114,31 +114,19 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
             );
         }
 
-/* TODO --> ho necesitem?
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
-                viewPager.setCurrentItem(tab.getPosition());
-                Log.d(TAG, "onTabSelected: pos: " + tab.getPosition());
-
-                switch (tab.getPosition()) {
-                    case 0:
-                        // TODO: Set Correct View
-                        break;
-                }
+                currentItem = tab.getPosition();
+                Log.d(TAG, "onTabSelected: pos: " + currentItem);
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabUnselected(TabLayout.Tab tab) {}
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });*/
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
     }
 
     private void setupPalette(Bitmap bitmap) {
@@ -238,7 +226,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         Log.d(TAG, "Selected a frame from the list " + frame);
     }
 
-    private static class ViewPagerAdapter extends FragmentPagerAdapter {
+    private static class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
