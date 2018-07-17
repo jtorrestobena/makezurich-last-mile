@@ -2,6 +2,7 @@ package ch.makezurich.conqueringlastmile.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -40,6 +41,10 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     private DeviceProfile deviceProfile;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView ivTabHeader;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private Toolbar toolbar;
+    private ViewPagerAdapter adapter;
 
     public static final String EXTRA_DEVICE_ID = "EXTRA_DEVICE_ID";
 
@@ -50,14 +55,25 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device);
-
-        ttnApp = (TTNApplication) getApplication();
-
         final Intent intent = getIntent();
         devId = intent.getStringExtra(EXTRA_DEVICE_ID);
+        ttnApp = (TTNApplication) getApplication();
         deviceProfile = ttnApp.getDataStorage().getApplicationData().getProfile(devId);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.htab_toolbar);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames()), getString(R.string.frames));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.activations));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.locations));
+
+        onConfigurationChanged(getResources().getConfiguration());
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setContentView(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT
+                ? R.layout.activity_device : R.layout.activity_device_land);
+
+        toolbar = (Toolbar) findViewById(R.id.htab_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             if (deviceProfile != null) {
@@ -65,14 +81,13 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
             } else {
                 getSupportActionBar().setTitle(R.string.device);
             }
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
-        setupViewPager(viewPager);
+        viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
+        viewPager.setAdapter(adapter);
 
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.htab_tabs);
+        tabLayout = (TabLayout) findViewById(R.id.htab_tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         ivTabHeader = findViewById(R.id.htab_header);
@@ -90,7 +105,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
 
         } catch (Exception e) {
             // if Bitmap fetch fails, fallback to primary colors
-            Log.e(TAG, "onCreate: failed to create bitmap from background", e.fillInStackTrace());
+            Log.e(TAG, "Failed to create bitmap from background", e.fillInStackTrace());
             collapsingToolbarLayout.setContentScrimColor(
                     ContextCompat.getColor(this, R.color.colorPrimary)
             );
@@ -99,6 +114,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
             );
         }
 
+/* TODO --> ho necesitem?
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -122,7 +138,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-        });
+        });*/
     }
 
     private void setupPalette(Bitmap bitmap) {
@@ -133,18 +149,16 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
 
                 int vibrantColor = palette.getVibrantColor(R.color.colorPrimary);
                 int vibrantDarkColor = palette.getDarkVibrantColor(R.color.colorPrimaryDark);
-                collapsingToolbarLayout.setContentScrimColor(vibrantColor);
-                collapsingToolbarLayout.setStatusBarScrimColor(vibrantDarkColor);
+                if (collapsingToolbarLayout != null) {
+                    // We are on portrait mode and collapsing toolbar is in layout
+                    collapsingToolbarLayout.setContentScrimColor(vibrantColor);
+                    collapsingToolbarLayout.setStatusBarScrimColor(vibrantDarkColor);
+                } else {
+                    toolbar.setBackgroundColor(vibrantColor);
+                    tabLayout.setBackgroundColor(vibrantColor);
+                }
             }
         });
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames()), getString(R.string.frames));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.activations));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.locations));
-        viewPager.setAdapter(adapter);
     }
 
     @Override
