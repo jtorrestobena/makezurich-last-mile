@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -16,9 +17,27 @@ import java.io.IOException;
 
 public abstract class PhotoActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final String PHOTO_PATH = "PHOTO_PATH";
     private String mCurrentPhotoPath;
     private int pictureWidth;
     private int pictureHeight;
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(PHOTO_PATH, mCurrentPhotoPath);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(PHOTO_PATH)) {
+                mCurrentPhotoPath = savedInstanceState.getString(PHOTO_PATH);
+            }
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
 
     protected void dispatchTakePictureIntent(int pictureWidth, int pictureHeight) {
         this.pictureWidth = pictureWidth;
