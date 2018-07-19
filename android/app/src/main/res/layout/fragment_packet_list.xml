@@ -23,17 +23,18 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:id="@+id/empty_view"
-        android:visibility="gone"
-        android:background="@color/white_50_alpha" >
+        android:visibility="gone">
         <com.airbnb.lottie.LottieAnimationView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:lottie_rawRes="@raw/empty_box"
-            app:lottie_loop="true"
             app:lottie_autoPlay="true" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/intro_textview"
+            android:padding="5dp"
+            android:textSize="20sp"
             android:fontFamily="@font/product_sans_regular"
             android:text="@string/no_frames_yet" />
     </LinearLayout>

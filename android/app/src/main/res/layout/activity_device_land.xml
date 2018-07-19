@@ -66,6 +66,7 @@
                 android:id="@+id/htab_viewpager"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:background="@color/white"
                 app:layout_constraintTop_toBottomOf="@id/htab_tabs"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/guideline"
