@@ -48,6 +48,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
@@ -61,7 +63,6 @@ import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 import ch.makezurich.ttnandroidapi.datastorage.api.TTNDataStorageApi;
-import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNMessageListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         DevicesFragment.OnListFragmentInteractionListener,
         PacketFragment.OnPacketFragmentSelectionListener,
         FrameFragment.OnFrameListFragmentInteractionListener,
-        DashboardFragment.OnDashboardSelectionListener, AndroidTTNListener {
+        DashboardFragment.OnDashboardSelectionListener, TTNApplication.TTNSessionListener {
 
     private static final String TAG = "MainActivity";
     public static final String EXTRA_PACKET = "EXTRA_PACKET";
@@ -415,4 +416,7 @@ public class MainActivity extends AppCompatActivity
         });
         builderSingle.show();
     }
+
+    @Override
+    public void onSessionRefresh(List<Packet> sessionPackets) {}
 }

@@ -18,7 +18,6 @@ import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
-import ch.makezurich.ttnandroidapi.mqtt.api.AndroidTTNListener;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 
 /**
@@ -27,7 +26,7 @@ import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
  * Activities containing this fragment MUST implement the {@link OnPacketFragmentSelectionListener}
  * interface.
  */
-public class PacketFragment extends BaseFragment implements AndroidTTNListener {
+public class PacketFragment extends BaseFragment implements TTNApplication.TTNSessionListener {
 
     private OnPacketFragmentSelectionListener mListener;
     private TTNApplication ttnApp;
@@ -191,6 +190,14 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
                 })
                 .setNegativeButton(android.R.string.cancel, null);
         builder.create().show();
+    }
+
+    @Override
+    public void onSessionRefresh(List<Packet> sessionPackets) {
+        this.sessionPackets = sessionPackets;
+        packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(sessionPackets, mListener);
+        recyclerView.setAdapter(packetRecyclerViewAdapter);
+        refreshFrames();
     }
 
     /**

@@ -59,13 +59,17 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private boolean notificationVibrate;
     private boolean debugEnabled;
 
-    private List<AndroidTTNListener> listeners = new ArrayList<>();
+    private List<TTNSessionListener> listeners = new ArrayList<>();
     private DataStorage dataStorage;
 
     private static final String CHANNEL_ID = "defaultTTNChannel";
     private int notificationId = 0;
 
     private File sessionsFolder;
+
+    public interface TTNSessionListener extends AndroidTTNListener {
+        void onSessionRefresh(List<Packet> sessionPackets);
+    }
 
     @Override
     public void onCreate() {
@@ -213,13 +217,13 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         return sessionPackets;
     }
 
-    public void addListener(AndroidTTNListener listener) {
+    public void addListener(TTNSessionListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
-    public void removeListener(AndroidTTNListener listener) {
+    public void removeListener(TTNSessionListener listener) {
         listeners.remove(listener);
     }
 
@@ -355,6 +359,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
                     runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
+                            for (TTNSessionListener l : listeners) l.onSessionRefresh(sessionPackets);
                             Toast.makeText(TTNApplication.this, R.string.session_loaded, Toast.LENGTH_LONG).show();
                         }
                     });
