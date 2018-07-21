@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
         <android.support.design.widget.AppBarLayout
             android:id="@+id/htab_appbar"
@@ -27,7 +27,6 @@
             android:background="@color/colorPrimary"
             android:layout_gravity="top"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
 
         </android.support.design.widget.AppBarLayout>
         <android.support.constraint.ConstraintLayout
@@ -71,6 +70,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/guideline"
                 app:layout_constraintRight_toRightOf="parent"
+                android:background="@color/white"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         </android.support.constraint.ConstraintLayout>

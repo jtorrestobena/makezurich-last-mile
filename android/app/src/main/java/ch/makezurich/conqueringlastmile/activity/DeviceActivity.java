@@ -59,6 +59,9 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     private static final int DEVICE_PICTURE_HEIGHT = 720;
     private int currentItem = 0;
 
+    private boolean isImageZoomed;
+    private int prevOrientation;
+
     // Hold a reference to the current animator,
     // so that it can be canceled mid-way.
     private Animator mCurrentAnimator;
@@ -81,6 +84,10 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+
+        // No need to recreate view
+        if (isImageZoomed) return;
+
         setContentView(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT
                 ? R.layout.activity_device : R.layout.activity_device_land);
 
@@ -423,7 +430,19 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
                 });
                 set.start();
                 mCurrentAnimator = set;
+
+                isImageZoomed = false;
+                final Configuration configuration = getResources().getConfiguration();
+                if (configuration.orientation != prevOrientation) {
+                    onConfigurationChanged(configuration);
+                }
             }
         });
+
+        // Set the flag that indicates image is zoomed so the overall view is not recreated
+        isImageZoomed = true;
+        // Keep the original orientation, so we can recreate the view, in case the orientation
+        // changed when the profile picture was zoomed
+        prevOrientation = getResources().getConfiguration().orientation;
     }
 }
