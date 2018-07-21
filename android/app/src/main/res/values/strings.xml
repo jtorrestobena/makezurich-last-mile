@@ -151,4 +151,5 @@
     <string name="copied_clipboard">Copied to clipboard</string>
     <string name="no_frames_yet">No frames yet</string>
     <string name="description_zoom_touch_close">Expanded picture</string>
+    <string name="get_picture_failed">Failed to obtain picture</string>
 </resources>

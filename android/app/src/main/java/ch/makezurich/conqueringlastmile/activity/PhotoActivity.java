@@ -11,9 +11,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+
+import ch.makezurich.conqueringlastmile.R;
 
 public abstract class PhotoActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -81,13 +84,19 @@ public abstract class PhotoActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bitmap picture = resizePicture();
+        Bitmap picture = null;
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) try {
+            picture = resizePicture();
             picture = checkOrientation(picture);
             if (picture != null) {
                 onPictureTaken(picture);
             }
             new File(mCurrentPhotoPath).delete();
+        } catch (Exception e) {
+            if (picture == null) {
+                Toast.makeText(this, R.string.get_picture_failed, Toast.LENGTH_LONG).show();
+            }
+            e.printStackTrace();
         }
     }
 

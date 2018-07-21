@@ -49,6 +49,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     private DeviceProfile deviceProfile;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView ivTabHeader;
+    private ImageView expandedImage;
     private TabLayout tabLayout;
     private Toolbar toolbar;
 
@@ -117,7 +118,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
 
         viewPager.setCurrentItem(currentItem);
 
-        final ImageView expandedImage = findViewById(R.id.expanded_image);
+        expandedImage = findViewById(R.id.expanded_image);
         ivTabHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -296,6 +297,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     protected void onPictureTaken(Bitmap picture) {
         deviceProfile.setPicture(picture);
         ivTabHeader.setImageBitmap(picture);
+        expandedImage.setImageBitmap(picture);
         setupPalette(picture);
         savedata();
     }
