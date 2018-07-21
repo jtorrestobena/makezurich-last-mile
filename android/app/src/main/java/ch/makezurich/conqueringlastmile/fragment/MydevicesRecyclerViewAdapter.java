@@ -12,8 +12,8 @@ import java.util.List;
 import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment.OnListFragmentInteractionListener;
+import ch.makezurich.conqueringlastmile.view.CircleImageView;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
-import de.hdodenhof.circleimageview.CircleImageView;
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
  *
