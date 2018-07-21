@@ -348,20 +348,16 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     public void loadSession(String session) {
         File sessionFile = new File(sessionsFolder, session);
         if (sessionFile.exists()) {
-            FileInputOutput.read(sessionFile, new FileInputOutput.FileIOReadCallback() {
+            FileInputOutput.read(sessionFile, new FileInputOutput.FileIOReadCallback<List<Packet>>() {
                 @Override
-                public void onReadComplete(Object object) {
-                    try {
-                        sessionPackets = (List<Packet>) object;
-                        runOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(TTNApplication.this, R.string.session_loaded, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    } catch (ClassCastException cce) {
-                        onException(cce);
-                    }
+                public void onReadComplete(List<Packet> object) {
+                    sessionPackets = object;
+                    runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(TTNApplication.this, R.string.session_loaded, Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
 
                 @Override

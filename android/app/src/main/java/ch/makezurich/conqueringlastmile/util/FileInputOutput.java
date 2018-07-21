@@ -15,8 +15,8 @@ public class FileInputOutput {
         void onException(Exception ex);
     }
 
-    public interface FileIOReadCallback {
-        void onReadComplete(Object object);
+    public interface FileIOReadCallback <T> {
+        void onReadComplete(T object);
         void onException(Exception ex);
     }
 
