@@ -9,6 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:orientation="vertical">
         <android.support.design.widget.AppBarLayout
             android:id="@+id/htab_appbar"
@@ -66,7 +67,6 @@
                 android:id="@+id/htab_viewpager"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@color/white"
                 app:layout_constraintTop_toBottomOf="@id/htab_tabs"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/guideline"
@@ -75,4 +75,13 @@
 
         </android.support.constraint.ConstraintLayout>
     </LinearLayout>
+    <ImageView
+        android:id="@+id/expanded_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/black_color"
+        android:visibility="invisible"
+        android:src="@drawable/things_uno"
+        android:contentDescription="@string/description_zoom_touch_close" />
 </android.support.design.widget.CoordinatorLayout>
