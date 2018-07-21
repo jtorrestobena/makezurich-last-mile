@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,19 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
     private MyPacketRecyclerViewAdapter packetRecyclerViewAdapter;
     private View emptyView;
     private FloatingActionButton saveSessionButton;
+
+    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            ttnApp.getSessionPackets().remove(((MyPacketRecyclerViewAdapter.ViewHolder) viewHolder).mItem);
+            refreshFrames();
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -74,6 +88,9 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
         sessionPackets = ttnApp.getSessionPackets();
         packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(sessionPackets, mListener);
         recyclerView.setAdapter(packetRecyclerViewAdapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         if (sessionPackets == null || sessionPackets.isEmpty()){
             emptyView = view.findViewById(R.id.empty_view);
@@ -144,14 +161,17 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
     }
 
     private void refreshFrames() {
-        if (emptyView != null) {
+        packetRecyclerViewAdapter.notifyDataSetChanged();
+        if (!sessionPackets.isEmpty()) {
             emptyView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             saveSessionButton.setVisibility(View.VISIBLE);
+            recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            saveSessionButton.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
         }
-
-        packetRecyclerViewAdapter.notifyDataSetChanged();
-        recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
     }
 
     private void saveSession() {
@@ -195,7 +215,7 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
     @Override
     public void onSessionRefresh(List<Packet> sessionPackets) {
         this.sessionPackets = sessionPackets;
-        packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(sessionPackets, mListener);
+        packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(this.sessionPackets, mListener);
         recyclerView.setAdapter(packetRecyclerViewAdapter);
         refreshFrames();
     }
