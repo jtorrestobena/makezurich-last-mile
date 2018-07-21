@@ -164,4 +164,6 @@
     <string name="session_loaded">Loaded session</string>
     <string name="session_exist_title">Session already exists</string>
     <string name="session_exist_message">Do you want to overwrite session %s? All previous data will be lost!</string>
+    <string name="mail_action">MAIL</string>
+    <string name="mail_chooser_type">Send Email</string>
 </resources>

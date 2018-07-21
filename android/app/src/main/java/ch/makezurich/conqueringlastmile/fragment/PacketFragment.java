@@ -92,8 +92,8 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        emptyView = view.findViewById(R.id.empty_view);
         if (sessionPackets == null || sessionPackets.isEmpty()){
-            emptyView = view.findViewById(R.id.empty_view);
             recyclerView.setVisibility(View.GONE);
             saveSessionButton.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);

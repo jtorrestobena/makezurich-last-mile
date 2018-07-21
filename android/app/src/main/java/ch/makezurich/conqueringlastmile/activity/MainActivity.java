@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Send me an e-mail", Snackbar.LENGTH_LONG)
-                        .setAction("MAIL", new View.OnClickListener() {
+                        .setAction(R.string.mail_action, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Intent.ACTION_SEND);
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
                                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject));
                                 intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_text));
 
-                                startActivity(Intent.createChooser(intent, "Send Email"));
+                                startActivity(Intent.createChooser(intent, getString(R.string.mail_chooser_type)));
                             }
                         }).show();
             }
