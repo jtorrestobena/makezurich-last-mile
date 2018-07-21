@@ -9,11 +9,15 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +27,7 @@ import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.packetclass.DemoPayloadPacket;
 import ch.makezurich.conqueringlastmile.util.ConnectionSettings;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
+import ch.makezurich.conqueringlastmile.util.FileInputOutput;
 import ch.makezurich.ttnandroidapi.datastorage.api.Device;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 import ch.makezurich.ttnandroidapi.datastorage.api.TTNDataStorageApi;
@@ -60,6 +65,8 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     private static final String CHANNEL_ID = "defaultTTNChannel";
     private int notificationId = 0;
 
+    private File sessionsFolder;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -67,6 +74,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
         dataStorage = new DataStorage(this, preferences);
+        sessionsFolder = new File(getFilesDir(), "sessions");
 
         isConfigValid = loadConfiguration(preferences);
         if (isConfigValid) {
@@ -298,5 +306,88 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     public boolean isDebugEnabled() {
         return debugEnabled;
+    }
+
+    public boolean saveSession(String name, boolean overwrite) {
+        final File sessionFile = new File(sessionsFolder, name);
+        if (sessionFile.exists() && !overwrite) {
+            return false;
+        }
+
+        if (!sessionsFolder.exists()) {
+            sessionsFolder.mkdirs();
+        }
+        saveSessionImpl(sessionFile);
+        return true;
+    }
+
+    private void saveSessionImpl(File sessFile) {
+        FileInputOutput.write(sessionPackets, sessFile, new FileInputOutput.FileIOWriteCallback() {
+            @Override
+            public void onSaveComplete() {
+                runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(TTNApplication.this, R.string.session_saved, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(TTNApplication.this, R.string.session_save_failed, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+    }
+
+    public void loadSession(String session) {
+        File sessionFile = new File(sessionsFolder, session);
+        if (sessionFile.exists()) {
+            FileInputOutput.read(sessionFile, new FileInputOutput.FileIOReadCallback() {
+                @Override
+                public void onReadComplete(Object object) {
+                    try {
+                        sessionPackets = (List<Packet>) object;
+                        runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(TTNApplication.this, R.string.session_loaded, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } catch (ClassCastException cce) {
+                        onException(cce);
+                    }
+                }
+
+                @Override
+                public void onException(final Exception ex) {
+                    runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(TTNApplication.this, getString(R.string.could_not_load_session) + ex, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
+        } else {
+            Toast.makeText(this, R.string.session_not_exist, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public String[] getSavedSessions() {
+        if (!sessionsFolder.exists()) {
+            return null;
+        }
+
+        return sessionsFolder.list();
+    }
+
+    private void runOnMainThread(Runnable runnable) {
+        new Handler(Looper.getMainLooper()).post(runnable);
     }
 }

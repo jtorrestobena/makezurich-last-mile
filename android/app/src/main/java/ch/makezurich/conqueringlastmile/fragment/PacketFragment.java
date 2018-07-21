@@ -1,12 +1,19 @@
 package ch.makezurich.conqueringlastmile.fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import ch.makezurich.conqueringlastmile.R;
@@ -29,6 +36,7 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
     private List<Packet> sessionPackets;
     private MyPacketRecyclerViewAdapter packetRecyclerViewAdapter;
     private View emptyView;
+    private FloatingActionButton saveSessionButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,6 +62,14 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_packet_list, container, false);
 
+        saveSessionButton = view.findViewById(R.id.fab_save_session);
+        saveSessionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveSession();
+            }
+        });
+
         // Set the adapter
         recyclerView = view.findViewById(R.id.list);
         sessionPackets = ttnApp.getSessionPackets();
@@ -63,6 +79,7 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
         if (sessionPackets == null || sessionPackets.isEmpty()){
             emptyView = view.findViewById(R.id.empty_view);
             recyclerView.setVisibility(View.GONE);
+            saveSessionButton.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
         }
 
@@ -131,10 +148,49 @@ public class PacketFragment extends BaseFragment implements AndroidTTNListener {
         if (emptyView != null) {
             emptyView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
+            saveSessionButton.setVisibility(View.VISIBLE);
         }
 
         packetRecyclerViewAdapter.notifyDataSetChanged();
         recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
+    }
+
+    private void saveSession() {
+        final EditText sessionName = new EditText(getContext());
+        sessionName.setText(String.format("Session_%s",
+                new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.save_session_dialog_title)
+                .setIcon(R.drawable.ic_baseline_save_24px)
+                .setMessage(R.string.save_session_dialog_message)
+                .setView(sessionName)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        final String sSessionName = sessionName.getText().toString();
+                        if (!sSessionName.isEmpty()) {
+                            boolean wasSaved = ttnApp.saveSession(sSessionName, false);
+                            if (!wasSaved) {
+                                // Check if user wants to overwrite
+                                AlertDialog.Builder overwiteOKCancel = new AlertDialog.Builder(getContext());
+                                overwiteOKCancel.setTitle(R.string.session_exist_title)
+                                        .setIcon(R.drawable.ic_baseline_save_24px)
+                                        .setMessage(String.format(getString(R.string.session_exist_message), sSessionName))
+                                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                ttnApp.saveSession(sSessionName, true);
+                                            }
+                                        })
+                                        .setNegativeButton(android.R.string.cancel, null);
+                                overwiteOKCancel.create().show();
+                            }
+                        } else {
+                            Toast.makeText(getContext(), R.string.please_enter_session_name, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null);
+        builder.create().show();
     }
 
     /**

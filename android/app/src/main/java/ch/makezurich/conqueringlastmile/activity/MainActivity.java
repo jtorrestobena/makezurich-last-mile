@@ -44,6 +44,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -155,7 +156,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        // TODO handle extra
         final Bundle bundleExtra = getIntent().getBundleExtra(EXTRA_PACKET);
         if (bundleExtra != null) {
             final Object o = bundleExtra.get(EXTRA_PACKET_VALUE);
@@ -239,6 +239,9 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.action_load_session) {
+            loadSavedSession();
             return true;
         }
 
@@ -387,5 +390,29 @@ public class MainActivity extends AppCompatActivity
     private void startPacketDetailActivity(Packet packet) {
         Log.d(TAG, "Selected packet for inspection " + packet);
         // TODO start fragment for showing packet details
+    }
+
+    private void loadSavedSession() {
+        final String[] savedSessions = ttnApp.getSavedSessions();
+        if (savedSessions == null || savedSessions.length == 0) {
+            Toast.makeText(this, "No saved sessions available", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setIcon(R.drawable.ic_baseline_restore_24px);
+        builderSingle.setTitle(R.string.select_session_load);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice, savedSessions);
+
+        builderSingle.setNegativeButton(android.R.string.cancel, null);
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ttnApp.loadSession(arrayAdapter.getItem(which));
+            }
+        });
+        builderSingle.show();
     }
 }

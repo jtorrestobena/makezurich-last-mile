@@ -152,4 +152,16 @@
     <string name="no_frames_yet">No frames yet</string>
     <string name="description_zoom_touch_close">Expanded picture</string>
     <string name="get_picture_failed">Failed to obtain picture</string>
+    <string name="save_session_dialog_title">Save session</string>
+    <string name="save_session_dialog_message">Enter name for saved session:</string>
+    <string name="please_enter_session_name">Please enter a session name</string>
+    <string name="session_saved">Session saved</string>
+    <string name="session_save_failed">Failed to save session</string>
+    <string name="session_not_exist">Session does not exist</string>
+    <string name="could_not_load_session">Could not load session</string>
+    <string name="load_session">Load session</string>
+    <string name="select_session_load">Select session to load:</string>
+    <string name="session_loaded">Loaded session</string>
+    <string name="session_exist_title">Session already exists</string>
+    <string name="session_exist_message">Do you want to overwrite session %s? All previous data will be lost!</string>
 </resources>
