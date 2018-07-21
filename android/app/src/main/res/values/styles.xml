@@ -16,6 +16,12 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <style name="AppTheme.White" parent="AppTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
