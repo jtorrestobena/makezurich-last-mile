@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Send me an e-mail", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, R.string.send_me_mail, Snackbar.LENGTH_LONG)
                         .setAction(R.string.mail_action, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {

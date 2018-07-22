@@ -166,4 +166,7 @@
     <string name="session_exist_message">Do you want to overwrite session %s? All previous data will be lost!</string>
     <string name="mail_action">MAIL</string>
     <string name="mail_chooser_type">Send Email</string>
+    <string name="send_me_mail">Send me an e-mail</string>
+    <string name="action_undo">UNDO</string>
+    <string name="packet_deleted">Packet deleted</string>
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -46,8 +47,18 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            ttnApp.getSessionPackets().remove(((MyPacketRecyclerViewAdapter.ViewHolder) viewHolder).mItem);
-            refreshFrames();
+            final Packet deleted = ((MyPacketRecyclerViewAdapter.ViewHolder) viewHolder).mItem;
+            final int indexDeleted = ttnApp.getSessionPackets().indexOf(deleted);
+            ttnApp.getSessionPackets().remove(deleted);
+            refreshFrames(false);
+            Snackbar.make(((MyPacketRecyclerViewAdapter.ViewHolder) viewHolder).mView, R.string.packet_deleted, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ttnApp.getSessionPackets().add(indexDeleted, deleted);
+                            refreshFrames(false);
+                        }
+                    }).show();
         }
     };
 
@@ -161,16 +172,22 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
     }
 
     private void refreshFrames() {
+        refreshFrames(true);
+    }
+
+    private void refreshFrames(boolean scrollTop) {
         packetRecyclerViewAdapter.notifyDataSetChanged();
         if (!sessionPackets.isEmpty()) {
             emptyView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             saveSessionButton.setVisibility(View.VISIBLE);
-            recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
+            if (scrollTop) {
+                recyclerView.smoothScrollToPosition(sessionPackets.size() - 1);
+            }
         } else {
+            emptyView.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
             saveSessionButton.setVisibility(View.GONE);
-            emptyView.setVisibility(View.VISIBLE);
         }
     }
 
