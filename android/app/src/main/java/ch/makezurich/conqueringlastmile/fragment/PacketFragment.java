@@ -99,6 +99,22 @@ public class PacketFragment extends BaseFragment implements TTNApplication.TTNSe
         sessionPackets = ttnApp.getSessionPackets();
         packetRecyclerViewAdapter = new MyPacketRecyclerViewAdapter(sessionPackets, mListener);
         recyclerView.setAdapter(packetRecyclerViewAdapter);
+        recyclerView.clearOnScrollListeners();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        saveSessionButton.show();
+                        break;
+                    default:
+                        saveSessionButton.hide();
+                        break;
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
+
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
