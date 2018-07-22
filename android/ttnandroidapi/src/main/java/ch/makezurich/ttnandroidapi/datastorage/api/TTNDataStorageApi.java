@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import java.util.Scanner;
 import javax.net.ssl.HttpsURLConnection;
 
 import ch.makezurich.ttnandroidapi.common.DateTimeConverter;
+import ch.makezurich.ttnandroidapi.common.TTNPacketTypeAdapterFactory;
 
 /*
  * Copyright 2018 Jose Antonio Torres Tobena / bytecoders
@@ -71,7 +73,9 @@ public class TTNDataStorageApi {
         JodaTimeAndroid.init(context);
 
         mGson = new GsonBuilder()
+                .excludeFieldsWithModifiers(Modifier.STATIC)
                 .registerTypeAdapter(DateTime.class, new DateTimeConverter())
+                .registerTypeAdapterFactory(new TTNPacketTypeAdapterFactory())
                 .create();
 
         this.apiUrl = "https://"+ appId +".data.thethingsnetwork.org/api/v2/";
@@ -131,11 +135,7 @@ public class TTNDataStorageApi {
             if (jsonStr != null) {
                 Frame[] frames = mGson.fromJson(jsonStr, Frame[].class);
                 if (frames != null) {
-                    final ArrayList<Frame> frames1ist= new ArrayList<>(Arrays.asList(frames));
-                    for (Frame f: frames1ist) {
-                        f.parse();
-                    }
-                    return frames1ist;
+                    return new ArrayList<>(Arrays.asList(frames));
                 }
             }
 

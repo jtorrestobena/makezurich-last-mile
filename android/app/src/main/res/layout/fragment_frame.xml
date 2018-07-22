@@ -37,6 +37,7 @@
         android:id="@+id/frame_timestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="right"
         android:layout_margin="5dp"
         android:fontFamily="@font/product_sans_bold_italic"
         android:textColor="@color/black_700"
