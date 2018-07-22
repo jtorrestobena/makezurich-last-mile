@@ -22,6 +22,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.joda.time.DateTime;
 
+import java.lang.reflect.Modifier;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import ch.makezurich.ttnandroidapi.R;
 import ch.makezurich.ttnandroidapi.common.DateTimeConverter;
+import ch.makezurich.ttnandroidapi.common.TTNPacketTypeAdapterFactory;
 import ch.makezurich.ttnandroidapi.mqtt.api.data.Packet;
 import ch.makezurich.ttnandroidapi.mqtt.api.tls.SocketFactory;
 
@@ -79,6 +81,8 @@ public class AndroidTTNClient {
         JodaTimeAndroid.init(context);
 
         mGson = new GsonBuilder()
+                .excludeFieldsWithModifiers(Modifier.STATIC)
+                .registerTypeAdapterFactory(new TTNPacketTypeAdapterFactory())
                 .registerTypeAdapter(DateTime.class, new DateTimeConverter())
                 .create();
         final String serverUri;

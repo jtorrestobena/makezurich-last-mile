@@ -2,7 +2,11 @@ package ch.makezurich.ttnandroidapi.mqtt.api.data;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
+
+import ch.makezurich.ttnandroidapi.common.AbstractTTNPacket;
 
 /*
  * Copyright 2016 Fabio Tiriticco / Fabway
@@ -24,7 +28,9 @@ import java.io.Serializable;
  * Created by fabiotiriticco on 5 June 2016.
  *
  */
-public class Packet implements Serializable {
+public class Packet extends AbstractTTNPacket implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /*
     Example incoming uplink packet:
@@ -53,7 +59,9 @@ public class Packet implements Serializable {
     String mDevId;
 
     @SerializedName("payload_raw")
-    String mPayload;
+    transient String mPayload;
+
+    private byte[] payload;
 
     @SerializedName("port")
     int mPort;
@@ -74,7 +82,11 @@ public class Packet implements Serializable {
         return mAppId;
     }
 
-    public String getPayload() {
+    public String getPayloadBase64() {
+        if (mPayload == null) {
+            mPayload = getPayloadBase64(payload);
+        }
+
         return mPayload;
     }
 
@@ -91,7 +103,7 @@ public class Packet implements Serializable {
     }
 
     public String getDevEUI() {
-        return mDevEUI;
+        return formatHexString(mDevEUI, SEP_WHITESPACE);
     }
 
     public Metadata getMetadata() {
@@ -115,5 +127,19 @@ public class Packet implements Serializable {
                 .toString();
     }
 
+    @Override
+    protected void parse() {
+        payload = getPayloadBytes(mPayload);
+    }
+
+    @Override
+    protected byte[] getPayload() {
+        return payload;
+    }
+
+    @Override
+    public DateTime getTimeStamp() {
+        return getMetadata().mServerTime;
+    }
 }
 

@@ -1,11 +1,8 @@
 package ch.makezurich.ttnandroidapi.datastorage.api;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 import ch.makezurich.ttnandroidapi.common.AbstractTTNPacket;
 /*
@@ -29,7 +26,6 @@ public class Frame extends AbstractTTNPacket implements Serializable {
     private transient String raw;
     private DateTime time;
     private byte[] payload;
-    private transient String hexString;
 
     public String getDeviceId() {
         return device_id;
@@ -39,23 +35,18 @@ public class Frame extends AbstractTTNPacket implements Serializable {
         return raw;
     }
 
+    @Override
     public DateTime getTimeStamp() {
         return time;
-    }
-
-    public String getTimestampString() {
-        DateTimeFormatter formatter = DateTimeFormat.forStyle("LL")
-                .withLocale(Locale.getDefault());
-        return formatter.print( time );
-    }
-
-    public String getHexString() {
-        return hexString;
     }
 
     @Override
     protected void parse() {
         payload = getPayloadBytes(raw);
-        hexString = formatHexString(payload, SEP_WHITESPACE);
+    }
+
+    @Override
+    protected byte[] getPayload() {
+        return payload;
     }
 }

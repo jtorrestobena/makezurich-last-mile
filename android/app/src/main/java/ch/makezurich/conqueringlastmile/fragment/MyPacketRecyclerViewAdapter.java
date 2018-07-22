@@ -40,7 +40,9 @@ public class MyPacketRecyclerViewAdapter extends RecyclerView.Adapter<MyPacketRe
         holder.mDeviceEUIView.setText(holder.mItem.getDevEUI());
         holder.mPortView.setText(String.valueOf(holder.mItem.getPort()));
         holder.mCounterView.setText(String.valueOf(holder.mItem.getCounter()));
-        holder.mPayloadView.setText(holder.mItem.getPayload());
+        holder.mPayloadBase64View.setText(holder.mItem.getPayloadBase64());
+        holder.mPayloadHexView.setText(holder.mItem.getPayloadHexString());
+        holder.mTimestampView.setText(holder.mItem.getTimestampString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +67,9 @@ public class MyPacketRecyclerViewAdapter extends RecyclerView.Adapter<MyPacketRe
         final TextView mDeviceEUIView;
         final TextView mPortView;
         final TextView mCounterView;
-        final TextView mPayloadView;
+        final TextView mPayloadBase64View;
+        final TextView mPayloadHexView;
+        final TextView mTimestampView;
         public Packet mItem;
 
         public ViewHolder(View view) {
@@ -75,7 +79,9 @@ public class MyPacketRecyclerViewAdapter extends RecyclerView.Adapter<MyPacketRe
             mDeviceEUIView = view.findViewById(R.id.dev_eui);
             mPortView  = view.findViewById(R.id.port);
             mCounterView = view.findViewById(R.id.counter);
-            mPayloadView = view.findViewById(R.id.payload);
+            mPayloadBase64View = view.findViewById(R.id.payload);
+            mPayloadHexView = view.findViewById(R.id.payload_hex);
+            mTimestampView = view.findViewById(R.id.packet_timestamp);
         }
 
         @Override

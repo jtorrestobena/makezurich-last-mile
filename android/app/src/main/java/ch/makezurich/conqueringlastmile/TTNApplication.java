@@ -288,9 +288,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setColor(getResources().getColor(R.color.colorPrimaryDark))
                 .setContentTitle(getString(R.string.message_from, _msg.getDevId()))
-                .setContentText(_msg.getPayload())
+                .setContentText(_msg.getPayloadBase64())
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(_msg.getPayload()))
+                        .bigText(_msg.getPayloadBase64()))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
