@@ -104,9 +104,9 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         }
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames()), getString(R.string.frames));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.activations));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(new ArrayList<Frame>()), getString(R.string.locations));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames(devId), devId), getString(R.string.frames));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames(devId), devId), getString(R.string.activations));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames(devId), devId), getString(R.string.locations));
         ViewPager viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
         viewPager.setAdapter(adapter);
 

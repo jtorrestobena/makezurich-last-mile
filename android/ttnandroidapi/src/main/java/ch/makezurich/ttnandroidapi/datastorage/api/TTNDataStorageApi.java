@@ -151,6 +151,10 @@ public class TTNDataStorageApi {
         return frameCollection;
     }
 
+    public List<Frame> getAllFrames(String device) throws TTNDataException {
+        return getAllFrames(device, MAX_TIME);
+    }
+
     public List<Frame> getAllFrames(String device, String since) throws TTNDataException {
         try {
             String jsonStr= executeQuery("query"+ (device == null ? "" : "/" + device) +"?last=" + since);

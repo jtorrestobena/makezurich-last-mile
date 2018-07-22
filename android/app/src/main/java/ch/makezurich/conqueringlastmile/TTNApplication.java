@@ -144,6 +144,16 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         return true;
     }
 
+    public List<Frame> getNewFrames(String device) {
+        List<Frame> newFrames = new ArrayList<>();
+        try {
+            newFrames = mTTNDataStore.getAllFrames(device);
+        } catch (TTNDataStorageApi.TTNDataException e) {
+            e.printStackTrace();
+        }
+        return newFrames;
+    }
+
     public List<Frame> getNewFrames() {
         try {
             frames = mTTNDataStore.getAllFrames();
@@ -211,6 +221,19 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     public List<Frame> getFrames() {
         return frames;
     }
+
+    public List<Frame> getFrames(String device) {
+        final List<Frame> deviceFrames = new ArrayList<>();
+        for (Frame f : frames) {
+            if (f.getDeviceId().equals(device)) {
+                deviceFrames.add(f);
+            }
+        }
+
+        return deviceFrames;
+    }
+
+
 
     public List<Packet> getSessionPackets() {
         return sessionPackets;

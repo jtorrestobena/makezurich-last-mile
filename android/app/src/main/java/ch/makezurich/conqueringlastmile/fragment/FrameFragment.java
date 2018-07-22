@@ -39,6 +39,7 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
+    private String deviceId;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -79,6 +80,11 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
         return v;
     }
 
+    public FrameFragment setFrames(List<Frame> frames, String deviceId) {
+        this.deviceId = deviceId;
+        return setFrames(frames);
+    }
+
     public FrameFragment setFrames(List<Frame> frames) {
         this.frames = frames;
         Collections.reverse(this.frames);
@@ -108,7 +114,12 @@ public class FrameFragment extends BaseFragment implements SwipeRefreshLayout.On
         new Thread() {
             @Override
             public void run() {
-                frames = ((TTNApplication) getContext().getApplicationContext()).getNewFrames();
+                final TTNApplication ttnApplication = (TTNApplication) getContext().getApplicationContext();
+                if (deviceId == null) {
+                    frames = ttnApplication.getNewFrames();
+                } else {
+                    frames = ttnApplication.getNewFrames(deviceId);
+                }
                 Collections.reverse(frames);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
