@@ -16,7 +16,9 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -46,6 +48,8 @@ public class TTNDataStorageApi {
     private String authKey;
     private String apiUrl;
     private Gson mGson;
+    // Storage integration keeps your data for maximum 7 days
+    public static final String MAX_TIME = "7d";
 
     public static class TTNDataException extends Exception {
         private int code = 0;
@@ -129,9 +133,27 @@ public class TTNDataStorageApi {
         return  s.hasNext() ? s.next() : "";
     }
 
-    public List<Frame> getAllFrames(String since) throws TTNDataException {
+    public List<Frame> getAllFrames() throws TTNDataException {
+        return getAllFrames(null, MAX_TIME);
+    }
+
+    public Map<String, List<Frame>> getAllFramesForDevices (List<Device> devices) throws TTNDataException {
+        return getAllFramesForDevices(devices, MAX_TIME);
+    }
+
+    public Map<String, List<Frame>> getAllFramesForDevices (List<Device> devices, String since) throws TTNDataException {
+        Map<String, List<Frame>> frameCollection = new HashMap<>();
+        for (Device d : devices) {
+            final String name = d.getName();
+            frameCollection.put(name, getAllFrames(name, since));
+        }
+
+        return frameCollection;
+    }
+
+    public List<Frame> getAllFrames(String device, String since) throws TTNDataException {
         try {
-            String jsonStr= executeQuery("query?last=" + since);
+            String jsonStr= executeQuery("query"+ (device == null ? "" : "/" + device) +"?last=" + since);
             if (jsonStr != null) {
                 Frame[] frames = mGson.fromJson(jsonStr, Frame[].class);
                 if (frames != null) {

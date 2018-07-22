@@ -146,7 +146,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     public List<Frame> getNewFrames() {
         try {
-            frames = mTTNDataStore.getAllFrames("7d");
+            frames = mTTNDataStore.getAllFrames();
         } catch (TTNDataStorageApi.TTNDataException e) {
             e.printStackTrace();
         }
@@ -174,9 +174,8 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
                     for (Device d : devices) {
                         devicesProfiles.add(dataStorage.getApplicationData().getProfile(d.getName()));
                     }
-                    // Frames from last 7 days
-                    frames = mTTNDataStore.getAllFrames("7d");
 
+                    getNewFrames();
                     if (drc != null) {
                         drc.onDevicesLoaded();
                     }
