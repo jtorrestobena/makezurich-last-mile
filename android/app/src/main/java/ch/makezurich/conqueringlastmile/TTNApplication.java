@@ -115,13 +115,14 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     }
 
     private boolean loadConfiguration(SharedPreferences preferences) {
+        // Check if the app id and secret key are empty or have whitespaces
         appId = preferences.getString("ttn_app_id", null);
         Log.d(TAG, "App id set to " + appId);
-        if (appId == null) return false;
+        if (appId == null || appId.isEmpty() || appId.contains(" ")) return false;
 
         appAccessKey = preferences.getString("ttn_app_access_key", null);
         Log.d(TAG, "appAccessKey id set to " + appAccessKey);
-        if (appAccessKey == null) return false;
+        if (appAccessKey == null || appAccessKey.isEmpty() || appAccessKey.contains(" ")) return false;
 
         handler = preferences.getString("ttn_handler", "eu");
         tlsEnabled = preferences.getBoolean("enable_tls", true);
