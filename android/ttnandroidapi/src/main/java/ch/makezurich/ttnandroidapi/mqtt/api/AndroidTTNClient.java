@@ -220,6 +220,7 @@ public class AndroidTTNClient {
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
                     subscribeToTopic();
+                    Log.d(TAG, "Connected: "+ listeners.size() + " listeners");
                     for (AndroidTTNListener l : listeners) {
                         l.onConnected(false);
                     }

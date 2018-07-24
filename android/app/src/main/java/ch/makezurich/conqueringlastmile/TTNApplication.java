@@ -208,7 +208,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
     }
 
     public void stopClients() {
-        mAndroidTTNClient.stop();
+        if (mAndroidTTNClient != null) {
+            mAndroidTTNClient.stop();
+        }
     }
 
     public List<Device> getDevices() {
@@ -261,6 +263,7 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     @Override
     public void onConnected(boolean _reconnect) {
+        Log.d(TAG, "Connected: " + listeners.size() + " listening to app");
         for (AndroidTTNListener l : listeners) l.onConnected(_reconnect);
     }
 

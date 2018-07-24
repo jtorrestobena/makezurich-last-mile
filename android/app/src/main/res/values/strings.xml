@@ -169,4 +169,10 @@
     <string name="send_me_mail">Send me an e-mail</string>
     <string name="action_undo">UNDO</string>
     <string name="packet_deleted">Packet deleted</string>
+    <string name="hi_there">Hi There!</string>
+    <string name="new_slide_right">Seems that you are new here, slide right to get started</string>
+    <string name="ttn_account_explanation">This the first thing you will need. A TTN account where you run your own application. If you already have one then slide to the left, if not you can <a href="https://www.thethingsnetwork.org">create one here</a>. We will wait for you</string>
+    <string name="congrats">Congratulations!</string>
+    <string name="app_ready">Your app is now ready to be used</string>
+    <string name="ttn_settings_description">Tap the gear below to enter your application ID, access key and handler</string>
 </resources>

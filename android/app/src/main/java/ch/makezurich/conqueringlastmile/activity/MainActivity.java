@@ -59,6 +59,7 @@ import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.PacketFragment;
 import ch.makezurich.conqueringlastmile.fragment.SendPayloadFragment;
 import ch.makezurich.conqueringlastmile.fragment.ToolsFragment;
+import ch.makezurich.conqueringlastmile.fragment.intro.IntroFragment;
 import ch.makezurich.conqueringlastmile.util.DeviceRequestCallback;
 import ch.makezurich.ttnandroidapi.common.StringUtil;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
@@ -87,6 +88,8 @@ public class MainActivity extends AppCompatActivity
 
     private FragmentManager fragmentManager;
 
+    private IntroFragment introFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ttnApp = (TTNApplication) getApplication();
+        ttnApp.addListener(this);
 
         FloatingActionButton fab = findViewById(R.id.fab_mail);
         setActionButtonSendMail(fab);
@@ -111,7 +115,16 @@ public class MainActivity extends AppCompatActivity
 
         welcomeLayout = findViewById(R.id.welcome_layout);
 
-        setupViews();
+        connectingImageView = findViewById(R.id.connecting_iv);
+        fetchDataImageView = findViewById(R.id.fetching_data_iv);
+
+        if (ttnApp.isConfigValid()) {
+            setupConnectingViewsAnimation();
+        } else {
+            welcomeLayout.setVisibility(View.GONE);
+            introFragment = IntroFragment.newInstance();
+            replaceFragment(introFragment);
+        }
         Log.d(TAG, "Config valid " + ttnApp.isConfigValid());
     }
 
@@ -165,7 +178,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        ttnApp.addListener(this);
         // Start
         if (ttnApp.isConfigValid()) {
             ttnApp.reloadDevices(new DeviceRequestCallback() {
@@ -189,22 +201,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        ttnApp.removeListener(this);
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         ttnApp.stopClients();
+        ttnApp.removeListener(this);
     }
 
-    private void setupViews() {
-        connectingImageView = findViewById(R.id.connecting_iv);
+    private void setupConnectingViewsAnimation() {
         connectingImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
-
-        fetchDataImageView = findViewById(R.id.fetching_data_iv);
         fetchDataImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
     }
 
@@ -254,9 +258,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         welcomeLayout.setVisibility(View.GONE);
 
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        final String title = item.getTitle().toString();
+        if (ttnApp.isConfigValid()) {
+            // Handle navigation view item clicks here.
+            int id = item.getItemId();
+            final String title = item.getTitle().toString();
 
         switch (id) {
             case R.id.nav_dashboard:
@@ -276,10 +281,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_arduino:
 
-                break;
-            case R.id.nav_send:
-                replaceFragment(SendPayloadFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
-                break;
+                    break;
+                case R.id.nav_send:
+                    replaceFragment(SendPayloadFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
+                    break;
+            }
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -344,7 +350,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnected(boolean _reconnect) {
         showToast(_reconnect ? "Reconnected" : "Connected");
-        connectingImageView.clearAnimation();
+        if (introFragment == null) {
+            connectingImageView.clearAnimation();
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    introFragment.setConnectionSuccessful();
+                }
+            });
+        }
         connectingImageView.setImageResource(R.drawable.ic_baseline_done_24px);
     }
 
