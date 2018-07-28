@@ -38,6 +38,7 @@ import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.datastorage.AppDataSaveStatus;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
+import ch.makezurich.conqueringlastmile.fragment.DeviceOverViewFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.ttnandroidapi.datastorage.api.Frame;
 
@@ -106,9 +107,11 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         }
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames(devId), devId), getString(R.string.frames));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames(devId), devId), getString(R.string.activations));
-        adapter.addFrag(FrameFragment.newInstance().setFrames(ttnApp.getFrames(devId), devId), getString(R.string.locations));
+        final List<Frame> deviceFrames = ttnApp.getFrames(devId);
+        final String lastTimeSeen = deviceFrames.isEmpty() ? getString(R.string.unknown) : deviceFrames.get(deviceFrames.size() - 1).getTimestampString();
+        adapter.addFrag(DeviceOverViewFragment.newInstance(deviceFrames.size(), lastTimeSeen), getString(R.string.overview));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(deviceFrames, devId), getString(R.string.frames));
+        adapter.addFrag(FrameFragment.newInstance().setFrames(deviceFrames, devId), getString(R.string.locations));
         ViewPager viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
         viewPager.setAdapter(adapter);
 

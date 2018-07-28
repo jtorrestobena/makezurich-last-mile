@@ -175,4 +175,9 @@
     <string name="congrats">Congratulations!</string>
     <string name="app_ready">Your app is now ready to be used</string>
     <string name="ttn_settings_description">Tap the gear below to enter your application ID, access key and handler</string>
+
+    <string name="number_of_frames">Number of frames:</string>
+    <string name="overview">Overview</string>
+    <string name="last_seen">Last seen:</string>
+    <string name="unknown">Unknown</string>
 </resources>
