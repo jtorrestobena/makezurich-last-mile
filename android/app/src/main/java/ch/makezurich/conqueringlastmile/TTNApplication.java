@@ -205,6 +205,8 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
                 }
             }.start();
+        } else if (drc != null) {
+            drc.onDevicesLoaded();
         }
     }
 
@@ -424,5 +426,9 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     private void runOnMainThread(Runnable runnable) {
         new Handler(Looper.getMainLooper()).post(runnable);
+    }
+
+    public boolean isConnectedToTTN() {
+        return mAndroidTTNClient != null && mAndroidTTNClient.isConnected();
     }
 }

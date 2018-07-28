@@ -208,7 +208,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupConnectingViewsAnimation() {
-        connectingImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+        if (ttnApp.isConnectedToTTN()) {
+            connectingImageView.setImageResource(R.drawable.ic_baseline_done_24px);
+        } else {
+            connectingImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+        }
         fetchDataImageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
     }
 

@@ -249,6 +249,10 @@ public class AndroidTTNClient {
         mqttAndroidClient.close();
     }
 
+    public boolean isConnected() {
+        return mqttAndroidClient.isConnected();
+    }
+
     public void setPacketClass(Class<? extends Packet> packetClass) {
         this.packetClass = packetClass;
     }
