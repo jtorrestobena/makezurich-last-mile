@@ -147,19 +147,23 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
 
     public List<Frame> getNewFrames(String device) {
         List<Frame> newFrames = new ArrayList<>();
-        try {
-            newFrames = mTTNDataStore.getAllFrames(device);
-        } catch (TTNDataStorageApi.TTNDataException e) {
-            e.printStackTrace();
+        if (dataAPIEnabled) {
+            try {
+                newFrames = mTTNDataStore.getAllFrames(device);
+            } catch (TTNDataStorageApi.TTNDataException e) {
+                e.printStackTrace();
+            }
         }
         return newFrames;
     }
 
     public List<Frame> getNewFrames() {
-        try {
-            frames = mTTNDataStore.getAllFrames();
-        } catch (TTNDataStorageApi.TTNDataException e) {
-            e.printStackTrace();
+        if (dataAPIEnabled) {
+            try {
+                frames = mTTNDataStore.getAllFrames();
+            } catch (TTNDataStorageApi.TTNDataException e) {
+                e.printStackTrace();
+            }
         }
         return frames;
     }
@@ -171,33 +175,37 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         mAndroidTTNClient = new AndroidTTNClient(this, appId, appAccessKey, handler, AndroidTTNClient.ALL_DEVICES_FILTER, tlsEnabled, this);
         mAndroidTTNClient.setPacketClass(DemoPayloadPacket.class);
         mAndroidTTNClient.start();
-        mTTNDataStore = new TTNDataStorageApi(this, appId, appAccessKey);
+        if (dataAPIEnabled) {
+            mTTNDataStore = new TTNDataStorageApi(this, appId, appAccessKey);
+        }
     }
 
     public void reloadDevices(final DeviceRequestCallback drc) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    devices = mTTNDataStore.getDevices();
-                    // Process profiles
-                    devicesProfiles = new ArrayList<>();
-                    for (Device d : devices) {
-                        devicesProfiles.add(dataStorage.getApplicationData().getProfile(d.getName()));
+        if (dataAPIEnabled) {
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        devices = mTTNDataStore.getDevices();
+                        // Process profiles
+                        devicesProfiles = new ArrayList<>();
+                        for (Device d : devices) {
+                            devicesProfiles.add(dataStorage.getApplicationData().getProfile(d.getName()));
+                        }
+
+                        getNewFrames();
+                        if (drc != null) {
+                            drc.onDevicesLoaded();
+                        }
+                    } catch (TTNDataStorageApi.TTNDataException ttnExc) {
+                        if (drc != null) {
+                            drc.onTTNException(ttnExc);
+                        }
                     }
 
-                    getNewFrames();
-                    if (drc != null) {
-                        drc.onDevicesLoaded();
-                    }
-                } catch (TTNDataStorageApi.TTNDataException ttnExc) {
-                    if (drc != null) {
-                        drc.onTTNException(ttnExc);
-                    }
                 }
-
-            }
-        }.start();
+            }.start();
+        }
     }
 
     public boolean isConfigValid() {
