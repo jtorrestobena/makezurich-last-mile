@@ -49,7 +49,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     private DeviceProfile deviceProfile;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private ImageView ivTabHeader;
-    private ImageView expandedImage;
+    private ImageView expandedImageView;
     private TabLayout tabLayout;
     private Toolbar toolbar;
 
@@ -66,6 +66,8 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     // Hold a reference to the current animator,
     // so that it can be canceled mid-way.
     private Animator mCurrentAnimator;
+    private final Rect startBounds = new Rect();
+    private float startScaleFinal;
 
     // The system "short" animation time duration, in milliseconds. This
     // duration is ideal for subtle animations or animations that occur
@@ -118,11 +120,11 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
 
         viewPager.setCurrentItem(currentItem);
 
-        expandedImage = findViewById(R.id.expanded_image);
+        expandedImageView = findViewById(R.id.expanded_image);
         ivTabHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                zoomImageFromThumb(view, expandedImage);
+                zoomImageFromThumb(view);
             }
         });
 
@@ -137,7 +139,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
                 bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.things_uno);
             } else {
                 ivTabHeader.setImageBitmap(bitmap);
-                expandedImage.setImageBitmap(bitmap);
+                expandedImageView.setImageBitmap(bitmap);
             }
             setupPalette(bitmap);
 
@@ -297,12 +299,12 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
     protected void onPictureTaken(Bitmap picture) {
         deviceProfile.setPicture(picture);
         ivTabHeader.setImageBitmap(picture);
-        expandedImage.setImageBitmap(picture);
+        expandedImageView.setImageBitmap(picture);
         setupPalette(picture);
         savedata();
     }
 
-    private void zoomImageFromThumb(final View thumbView, final ImageView expandedImageView) {
+    private void zoomImageFromThumb(final View thumbView) {
         // If there's an animation in progress, cancel it
         // immediately and proceed with this one.
         if (mCurrentAnimator != null) {
@@ -311,7 +313,6 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
 
         // Calculate the starting and ending bounds for the zoomed-in image.
         // This step involves lots of math. Yay, math.
-        final Rect startBounds = new Rect();
         final Rect finalBounds = new Rect();
         final Point globalOffset = new Point();
 
@@ -391,53 +392,11 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         // Upon clicking the zoomed-in image, it should zoom back down
         // to the original bounds and show the thumbnail instead of
         // the expanded image.
-        final float startScaleFinal = startScale;
+        startScaleFinal = startScale;
         expandedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mCurrentAnimator != null) {
-                    mCurrentAnimator.cancel();
-                }
-
-                // Animate the four positioning/sizing properties in parallel,
-                // back to their original values.
-                AnimatorSet set = new AnimatorSet();
-                set.play(ObjectAnimator
-                        .ofFloat(expandedImageView, View.X, startBounds.left))
-                        .with(ObjectAnimator
-                                .ofFloat(expandedImageView,
-                                        View.Y,startBounds.top))
-                        .with(ObjectAnimator
-                                .ofFloat(expandedImageView,
-                                        View.SCALE_X, startScaleFinal))
-                        .with(ObjectAnimator
-                                .ofFloat(expandedImageView,
-                                        View.SCALE_Y, startScaleFinal));
-                set.setDuration(mShortAnimationDuration);
-                set.setInterpolator(new DecelerateInterpolator());
-                set.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        thumbView.setAlpha(1f);
-                        expandedImageView.setVisibility(View.GONE);
-                        mCurrentAnimator = null;
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        thumbView.setAlpha(1f);
-                        expandedImageView.setVisibility(View.GONE);
-                        mCurrentAnimator = null;
-                    }
-                });
-                set.start();
-                mCurrentAnimator = set;
-
-                isImageZoomed = false;
-                final Configuration configuration = getResources().getConfiguration();
-                if (configuration.orientation != prevOrientation) {
-                    onConfigurationChanged(configuration);
-                }
+                zoomOutDevicePicture(ivTabHeader);
             }
         });
 
@@ -446,5 +405,61 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         // Keep the original orientation, so we can recreate the view, in case the orientation
         // changed when the profile picture was zoomed
         prevOrientation = getResources().getConfiguration().orientation;
+    }
+
+    private void zoomOutDevicePicture(final View thumbView) {
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.cancel();
+        }
+
+        // Animate the four positioning/sizing properties in parallel,
+        // back to their original values.
+        AnimatorSet set = new AnimatorSet();
+        set.play(ObjectAnimator
+                .ofFloat(expandedImageView, View.X, startBounds.left))
+                .with(ObjectAnimator
+                        .ofFloat(expandedImageView,
+                                View.Y,startBounds.top))
+                .with(ObjectAnimator
+                        .ofFloat(expandedImageView,
+                                View.SCALE_X, startScaleFinal))
+                .with(ObjectAnimator
+                        .ofFloat(expandedImageView,
+                                View.SCALE_Y, startScaleFinal));
+        set.setDuration(mShortAnimationDuration);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                thumbView.setAlpha(1f);
+                expandedImageView.setVisibility(View.GONE);
+                mCurrentAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                thumbView.setAlpha(1f);
+                expandedImageView.setVisibility(View.GONE);
+                mCurrentAnimator = null;
+            }
+        });
+        set.start();
+        mCurrentAnimator = set;
+
+        isImageZoomed = false;
+        final Configuration configuration = getResources().getConfiguration();
+        if (configuration.orientation != prevOrientation) {
+            onConfigurationChanged(configuration);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isImageZoomed) {
+            // Zoom out
+            zoomOutDevicePicture(ivTabHeader);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
