@@ -112,7 +112,7 @@ public class DeviceActivity extends PhotoActivity implements FrameFragment.OnFra
         adapter.addFrag(DeviceOverViewFragment.newInstance(deviceFrames.size(), lastTimeSeen), getString(R.string.overview));
         adapter.addFrag(FrameFragment.newInstance().setFrames(deviceFrames, devId), getString(R.string.frames));
         adapter.addFrag(FrameFragment.newInstance().setFrames(deviceFrames, devId), getString(R.string.locations));
-        ViewPager viewPager = (ViewPager) findViewById(R.id.htab_viewpager);
+        ViewPager viewPager = findViewById(R.id.htab_viewpager);
         viewPager.setAdapter(adapter);
 
         tabLayout = (TabLayout) findViewById(R.id.htab_tabs);

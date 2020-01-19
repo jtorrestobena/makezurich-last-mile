@@ -17,6 +17,8 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.osmdroid.config.Configuration;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +86,8 @@ public class TTNApplication extends Application implements SharedPreferences.OnS
         if (isConfigValid) {
             startClients();
         }
+
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
     }
 
     @Override

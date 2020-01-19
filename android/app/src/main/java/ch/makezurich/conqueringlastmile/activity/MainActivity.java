@@ -54,6 +54,7 @@ import ch.makezurich.conqueringlastmile.R;
 import ch.makezurich.conqueringlastmile.TTNApplication;
 import ch.makezurich.conqueringlastmile.datastorage.DeviceProfile;
 import ch.makezurich.conqueringlastmile.fragment.DashboardFragment;
+import ch.makezurich.conqueringlastmile.fragment.DeviceLocationFragment;
 import ch.makezurich.conqueringlastmile.fragment.DevicesFragment;
 import ch.makezurich.conqueringlastmile.fragment.FrameFragment;
 import ch.makezurich.conqueringlastmile.fragment.PacketFragment;
@@ -286,9 +287,12 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_arduino:
 
                     break;
-                case R.id.nav_send:
-                    replaceFragment(SendPayloadFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
-                    break;
+            case R.id.nav_gps_tracker:
+                replaceFragment(DeviceLocationFragment.newInstance(null, null));
+                break;
+            case R.id.nav_send:
+                replaceFragment(SendPayloadFragment.newInstance().setDevices(ttnApp.getDevices()).withIdTitle(title, id));
+                break;
             }
         }
 
